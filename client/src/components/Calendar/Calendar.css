@@ -1,0 +1,320 @@
+.calendar-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  animation: fadeIn var(--transition-normal);
+}
+
+/* ===== Calendar Header ===== */
+.calendar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.calendar-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-header__monthly-pnl {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.calendar-header__monthly-pnl--profit {
+  color: var(--profit-color);
+}
+
+.calendar-header__monthly-pnl--loss {
+  color: var(--loss-color);
+}
+
+.calendar-header__monthly-pnl--neutral {
+  color: var(--text-secondary);
+}
+
+.calendar-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.calendar-header__month-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  min-width: 140px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.calendar-header__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+}
+
+.calendar-header__nav-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.calendar-header__today-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  transition: all var(--transition-fast);
+}
+
+.calendar-header__today-btn:hover {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+/* ===== Calendar Grid ===== */
+.calendar-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border-primary);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-secondary);
+}
+
+.calendar-weekday {
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-weekday--trading {
+  color: var(--accent-blue);
+  position: relative;
+}
+
+.calendar-weekday--trading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--accent-blue);
+  border-radius: 1px;
+  opacity: 0.5;
+}
+
+.calendar-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  flex: 1;
+  min-height: 90px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+/* ===== Day Cell ===== */
+.day-cell {
+  position: relative;
+  padding: 8px;
+  border-right: 1px solid var(--border-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-height: 90px;
+}
+
+.day-cell:last-child {
+  border-right: none;
+}
+
+.day-cell:hover {
+  background: var(--bg-hover);
+}
+
+.day-cell--empty {
+  cursor: default;
+  background: var(--bg-primary);
+  opacity: 0.4;
+}
+
+.day-cell--empty:hover {
+  background: var(--bg-primary);
+}
+
+.day-cell--has-trades {
+  /* subtle background for days with data */
+}
+
+.day-cell--profit {
+  background: var(--profit-bg);
+}
+
+.day-cell--profit:hover {
+  background: var(--profit-bg-strong);
+}
+
+.day-cell--loss {
+  background: var(--loss-bg);
+}
+
+.day-cell--loss:hover {
+  background: var(--loss-bg-strong);
+}
+
+.day-cell--today {
+  border: 1px solid var(--accent-blue);
+}
+
+.day-cell--saturday {
+  position: relative;
+}
+
+.day-cell__number {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.day-cell--today .day-cell__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--accent-blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  animation: todayPulse 2s ease-in-out infinite;
+}
+
+.day-cell__pnl {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: auto;
+  line-height: 1.2;
+}
+
+.day-cell__pnl--profit {
+  color: var(--profit-color);
+}
+
+.day-cell__pnl--loss {
+  color: var(--loss-color);
+}
+
+.day-cell__trades {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* ===== Weekly Summary ===== */
+.week-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.week-summary__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.week-summary__pnl {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.week-summary__pnl--profit {
+  color: var(--profit-color);
+}
+
+.week-summary__pnl--loss {
+  color: var(--loss-color);
+}
+
+.week-summary__pnl--neutral {
+  color: var(--text-secondary);
+}
+
+.week-summary__trades {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ===== Add Trade Button in Cell ===== */
+.day-cell__add-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--accent-blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all var(--transition-fast);
+}
+
+.day-cell:hover .day-cell__add-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.day-cell__add-btn:hover {
+  background: var(--accent-purple);
+  transform: scale(1.1) !important;
+}

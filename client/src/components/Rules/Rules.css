@@ -1,0 +1,292 @@
+/* ===== Rules Page ===== */
+.rules-page {
+  padding: 24px;
+  animation: fadeIn var(--transition-normal);
+  overflow-y: auto;
+  height: 100%;
+  max-width: 720px;
+}
+
+.rules-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.rules-page__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.rules-page__subtitle {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* ===== Add Rule Form ===== */
+.rules-add-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.rules-add-form__input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.rules-add-form__input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px var(--accent-blue-bg);
+}
+
+.rules-add-form__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===== Rule Card ===== */
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules-list__empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-primary);
+}
+
+.rule-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  animation: slideUp 200ms ease backwards;
+}
+
+.rule-card:hover {
+  border-color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+}
+
+.rule-card--inactive {
+  opacity: 0.5;
+}
+
+/* Drag-and-drop states */
+.rule-card--dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+  box-shadow: none;
+  border-style: dashed;
+}
+
+.rule-card--drop-target {
+  border-color: var(--accent-blue);
+  box-shadow: 0 -3px 0 0 var(--accent-blue);
+  transform: translateY(2px);
+}
+
+.rule-card__handle {
+  color: var(--text-muted);
+  cursor: grab;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  user-select: none;
+  transition: color var(--transition-fast);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.rule-card__handle:hover {
+  color: var(--accent-blue);
+  background: var(--accent-blue-bg);
+}
+
+.rule-card--dragging .rule-card__handle {
+  cursor: grabbing;
+  color: var(--accent-blue);
+}
+
+.rule-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rule-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.rule-card__name-input {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  outline: none;
+  width: 100%;
+}
+
+.rule-card__description {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.rule-card__category {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-purple);
+  background: rgba(188, 140, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rule-card__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rule-card__toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--text-muted);
+  position: relative;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.rule-card__toggle--active {
+  background: var(--accent-blue);
+}
+
+.rule-card__toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: white;
+  transition: all var(--transition-fast);
+}
+
+.rule-card__toggle--active::after {
+  left: 20px;
+}
+
+/* ===== Rule Checklist in Trade Form ===== */
+.rule-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rule-checklist__empty {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.rule-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.rule-check-item:hover {
+  border-color: var(--border-primary);
+}
+
+.rule-check-item--checked {
+  border-color: var(--profit-color);
+  background: var(--profit-bg);
+}
+
+.rule-check-item__checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  font-size: 12px;
+  color: transparent;
+}
+
+.rule-check-item--checked .rule-check-item__checkbox {
+  background: var(--profit-color);
+  border-color: var(--profit-color);
+  color: white;
+}
+
+.rule-check-item__name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ===== Rule Score Badge ===== */
+.rule-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.rule-score--high {
+  background: var(--profit-bg);
+  color: var(--profit-color);
+}
+
+.rule-score--medium {
+  background: rgba(210, 153, 34, 0.1);
+  color: var(--accent-orange);
+}
+
+.rule-score--low {
+  background: var(--loss-bg);
+  color: var(--loss-color);
+}
