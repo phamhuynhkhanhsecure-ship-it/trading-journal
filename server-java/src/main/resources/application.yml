@@ -1,0 +1,45 @@
+spring:
+  cloud:
+    config:
+      import-check:
+        enabled: false
+  config:
+    import: 
+      - "optional:file:.env[.properties]"
+      - "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}"
+  application:
+    name: trading-journal-server
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: trading-journal-group
+      auto-offset-reset: earliest
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.conarum.tradingjournal: DEBUG
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+
+google:
+  drive:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    refresh-token: ${GOOGLE_REFRESH_TOKEN}
+    folder-id: ${GOOGLE_DRIVE_FOLDER_ID}
