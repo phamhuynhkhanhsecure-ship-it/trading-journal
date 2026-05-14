@@ -1,0 +1,97 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "optional:file:.env[.properties], optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: user-service-route
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/admin/users/**,/api/v1/users/**,/api/v1/admin/groups/**,/api/v1/admin/menus/**,/api/v1/admin/roles/**,/api/v1/admin/audit-logs/**,/api/internal/users/**,/api/v1/billing/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceCircuitBreaker
+                fallbackUri: forward:/fallback/user-service
+        - id: trading-journal-server-route
+          uri: lb://trading-journal-server
+          predicates:
+            - Path=/api/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: tradingServerCircuitBreaker
+                fallbackUri: forward:/fallback/trading-server
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, INTERNAL_SERVER_ERROR
+                methods: GET,POST,PUT,DELETE,OPTIONS
+                exceptions: java.io.IOException, java.net.ConnectException
+
+    loadbalancer:
+      cache:
+        ttl: 5s
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+    instances:
+      userServiceCircuitBreaker:
+        baseConfig: default
+      tradingServerCircuitBreaker:
+        baseConfig: default
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: User Service
+        url: /user-service/v3/api-docs
+      - name: Trading Journal Server
+        url: /trading-journal-server/v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    com.conarum.apigateway: DEBUG

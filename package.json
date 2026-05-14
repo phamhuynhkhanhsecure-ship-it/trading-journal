@@ -6,9 +6,19 @@
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
-    "install:all": "cd server && npm install && cd ../client && npm install"
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "deploy:srvs": "docker-compose up -d --build",
+    "deploy:srvs:down": "docker-compose down",
+    "build:java:config": "cd config-server && mvn clean package -DskipTests",
+    "build:java:discovery": "cd discovery-server && mvn clean package -DskipTests",
+    "build:java:api-gateway": "cd api-gateway && mvn clean package -DskipTests",
+    "build:java:user": "cd user-service && mvn clean package -DskipTests",
+    "build:java:server": "cd server-java && mvn clean package -DskipTests",
+    "build:java:all": "npm run build:java:config && npm run build:java:discovery && npm run build:java:user && npm run build:java:server && npm run build:java:api-gateway"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.8.0",
     "concurrently": "^9.1.0"
   }
 }

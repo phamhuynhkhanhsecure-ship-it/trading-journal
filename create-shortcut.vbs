@@ -7,16 +7,17 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 ' Get paths
 strDesktop = WshShell.SpecialFolders("Desktop")
 strScriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
-strTarget = strScriptDir & "\start.bat"
+strTarget = strScriptDir & "\start.vbs"
 strShortcutPath = strDesktop & "\Trading Journal.lnk"
 
 ' Create shortcut
 Set oShortcut = WshShell.CreateShortcut(strShortcutPath)
-oShortcut.TargetPath = strTarget
+oShortcut.TargetPath = "wscript.exe"
+oShortcut.Arguments = """" & strTarget & """"
 oShortcut.WorkingDirectory = strScriptDir
 oShortcut.Description = "Start Trading Journal Application"
 oShortcut.IconLocation = "shell32.dll,21"
-oShortcut.WindowStyle = 1
+oShortcut.WindowStyle = 7
 oShortcut.Save
 
 WScript.Echo "Desktop shortcut created successfully!" & vbCrLf & vbCrLf & "Location: " & strShortcutPath
