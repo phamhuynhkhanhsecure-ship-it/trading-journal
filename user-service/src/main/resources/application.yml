@@ -1,0 +1,32 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties], optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}"
+  application:
+    name: user-service
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+      group-id: user-service-group
+      auto-offset-reset: earliest
+
+server:
+  port: 8081
+
+app:
+  security:
+    super-admins: ${APP_SECURITY_SUPER_ADMINS:}
