@@ -1,0 +1,204 @@
+/* ===== Playbook Page ===== */
+.playbook-page { padding: 24px; overflow-y: auto; height: 100vh; }
+.playbook-page__header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.playbook-page__title { font-size: 1.3rem; font-weight: 700; }
+.playbook-page__subtitle { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
+
+/* Empty state */
+.playbook-empty { text-align: center; padding: 60px 20px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); }
+.playbook-empty__icon { font-size: 3rem; margin-bottom: 12px; }
+.playbook-empty h2 { font-size: 1.1rem; margin-bottom: 6px; }
+.playbook-empty p { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 16px; }
+
+/* Layout */
+.playbook-layout { display: flex; gap: 16px; }
+.playbook-list { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* Cards */
+.playbook-card { padding: 14px 16px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-left: 4px solid; border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); animation: slideUp 0.3s ease both; }
+.playbook-card:hover { background: var(--bg-hover); }
+.playbook-card--active { background: var(--accent-blue-bg); border-color: rgba(88,166,255,0.3); border-left-width: 4px; }
+
+.playbook-card__header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.playbook-card__dot { width: 10px; height: 10px; border-radius: var(--radius-full); flex-shrink: 0; }
+.playbook-card__name { font-weight: 600; font-size: 0.92rem; }
+.playbook-card__desc { font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.playbook-card__stats { display: flex; gap: 10px; font-size: 0.72rem; color: var(--text-secondary); }
+.playbook-card__stat.positive { color: var(--profit-color); }
+.playbook-card__stat.negative { color: var(--loss-color); }
+
+/* Detail panel */
+.playbook-detail { flex: 1; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: 20px; overflow-y: auto; }
+.playbook-detail__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.playbook-detail__title { font-size: 1.1rem; font-weight: 700; }
+.playbook-detail__actions { display: flex; gap: 6px; }
+.playbook-detail__desc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 16px; }
+
+.playbook-detail__stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+.playbook-stat-card { padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); text-align: center; }
+.playbook-stat-card__label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.playbook-stat-card__value { font-size: 1.1rem; font-weight: 700; }
+.playbook-stat-card__value.positive { color: var(--profit-color); }
+.playbook-stat-card__value.negative { color: var(--loss-color); }
+
+.playbook-detail__section { margin-bottom: 16px; }
+.playbook-detail__section-title { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.playbook-detail__text { font-size: 0.88rem; color: var(--text-primary); line-height: 1.6; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); white-space: pre-wrap; }
+
+.playbook-checklist { list-style: none; padding: 0; }
+.playbook-checklist__item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 12px; font-size: 0.88rem; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); margin-bottom: 4px; }
+.playbook-checklist__bullet { color: var(--accent-blue); font-weight: 700; }
+
+/* ===== Sortable Rules List ===== */
+.playbook-sortable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+}
+
+.playbook-sortable-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: grab;
+  transition: all var(--transition-fast);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.playbook-sortable-item:active {
+  cursor: grabbing;
+  border-color: var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(0.99);
+}
+
+.playbook-sortable-item:hover {
+  border-color: var(--border-secondary);
+}
+
+.playbook-sortable-item__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.playbook-sortable-item__drag-handle {
+  color: var(--text-tertiary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+  cursor: grab;
+  user-select: none;
+}
+
+.playbook-sortable-item:hover .playbook-sortable-item__drag-handle {
+  opacity: 1;
+  color: var(--text-secondary);
+}
+
+.playbook-sortable-item__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.playbook-sortable-item__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.playbook-sortable-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 1rem;
+}
+
+.playbook-sortable-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-secondary);
+}
+
+.playbook-sortable-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: var(--bg-primary);
+}
+
+/* Unselected rules section */
+.playbook-unselected-rules {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.playbook-unselected-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.playbook-unselected-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.playbook-unselected-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+.playbook-unselected-item input[type="checkbox"],
+.playbook-sortable-item__label input[type="checkbox"] {
+  accent-color: var(--accent-blue);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

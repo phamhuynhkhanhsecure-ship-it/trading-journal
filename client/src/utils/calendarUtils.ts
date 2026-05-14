@@ -12,7 +12,12 @@ export function formatDate(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, isBlindMode = false): string {
+  if (isBlindMode) {
+    if (amount < 0) return '-$***';
+    if (amount > 0) return '+$***';
+    return '$***';
+  }
   const absAmount = Math.abs(amount);
   const formatted = absAmount.toLocaleString('en-US', {
     minimumFractionDigits: 2,
@@ -23,7 +28,12 @@ export function formatCurrency(amount: number): string {
   return `$${formatted}`;
 }
 
-export function formatCurrencyShort(amount: number): string {
+export function formatCurrencyShort(amount: number, isBlindMode = false): string {
+  if (isBlindMode) {
+    if (amount < 0) return '-$***';
+    if (amount > 0) return '+$***';
+    return '$***';
+  }
   const absAmount = Math.abs(amount);
   const formatted = absAmount.toLocaleString('en-US', {
     minimumFractionDigits: 2,
@@ -44,16 +54,16 @@ export function isToday(year: number, month: number, day: number): boolean {
 
 export function getMonthName(month: number): string {
   const names = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
   ];
   return names[month - 1] || '';
 }
 
 export function getMonthNameShort(month: number): string {
   const names = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Th01', 'Th02', 'Th03', 'Th04', 'Th05', 'Th06',
+    'Th07', 'Th08', 'Th09', 'Th10', 'Th11', 'Th12',
   ];
   return names[month - 1] || '';
 }
@@ -70,7 +80,7 @@ export function aggregateByDay(trades: Trade[]): Record<string, DayData> {
       };
     }
     map[trade.date].trades.push(trade);
-    map[trade.date].totalPnl += trade.pnl;
+    map[trade.date].totalPnl += (trade.pnl - (trade.fees || 0));
     map[trade.date].tradeCount += 1;
   }
   return map;
@@ -82,7 +92,6 @@ export function calculateWeekSummaries(
   dayDataMap: Record<string, DayData>
 ): WeekSummary[] {
   const daysInMonth = getDaysInMonth(year, month);
-  const firstDay = getFirstDayOfMonth(year, month);
   const weeks: WeekSummary[] = [];
 
   let weekNum = 1;
@@ -135,7 +144,7 @@ export function buildMonthData(year: number, month: number, trades: Trade[]): Mo
     year,
     month,
     trades: monthTrades,
-    totalPnl: monthTrades.reduce((sum, t) => sum + t.pnl, 0),
+    totalPnl: monthTrades.reduce((sum, t) => sum + (t.pnl - (t.fees || 0)), 0),
     totalTrades: monthTrades.length,
     winningDays,
     losingDays,

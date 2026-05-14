@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import type { ThemeMode } from '../types';
 
 interface ThemeContextType {
@@ -11,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('trading-journal-theme');
-    return (saved as ThemeMode) || 'dark';
+    return (saved as ThemeMode) || 'light';
   });
 
   useEffect(() => {

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import CalendarHeader from './CalendarHeader';
 import CalendarDayCell from './CalendarDayCell';
 import TradeModal from '../TradeForm/TradeModal';
@@ -13,9 +14,13 @@ import {
 import type { Trade, MonthData } from '../../types';
 import './Calendar.css';
 
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-
 export default function Calendar() {
+  const { t } = useTranslation();
+  
+  const WEEKDAYS = useMemo(() => [
+    t('calendar.days.sun'), t('calendar.days.mon'), t('calendar.days.tue'), 
+    t('calendar.days.wed'), t('calendar.days.thu'), t('calendar.days.fri'), t('calendar.days.sat')
+  ], [t]);
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
@@ -219,6 +224,10 @@ export default function Calendar() {
           trade={viewingTrade}
           onClose={() => setViewingTrade(null)}
           onEdit={handleEditTrade}
+          onUpdate={(updatedTrade) => {
+            setViewingTrade(updatedTrade);
+            setTrades(prev => prev.map(t => t.id === updatedTrade.id ? updatedTrade : t));
+          }}
         />
       )}
     </div>

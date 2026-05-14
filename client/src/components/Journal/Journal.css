@@ -1,0 +1,70 @@
+/* ===== Journal Page ===== */
+.journal-page { padding: 24px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.journal-page__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-shrink: 0; }
+.journal-page__title { font-size: 1.3rem; font-weight: 700; }
+.journal-page__nav { display: flex; align-items: center; gap: 8px; }
+.journal-page__period { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); min-width: 90px; text-align: center; }
+
+.journal-layout { display: flex; gap: 16px; flex: 1; overflow: hidden; }
+
+/* Sidebar day list */
+.journal-sidebar { width: 220px; flex-shrink: 0; overflow-y: auto; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); }
+.journal-day-list { padding: 6px; }
+
+.journal-day-item { padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); margin-bottom: 2px; display: flex; flex-direction: column; gap: 2px; }
+.journal-day-item:hover { background: var(--bg-hover); }
+.journal-day-item--active { background: var(--accent-blue-bg); border: 1px solid rgba(88,166,255,0.3); }
+.journal-day-item--has-entry { border-left: 3px solid var(--accent-blue); }
+.journal-day-item__date { display: flex; align-items: center; justify-content: space-between; }
+.journal-day-item__num { font-weight: 600; font-size: 0.9rem; }
+.journal-day-item__mood { font-size: 1rem; }
+.journal-day-item__meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-tertiary); }
+.journal-day-item__pnl.positive { color: var(--profit-color); }
+.journal-day-item__pnl.negative { color: var(--loss-color); }
+
+/* Editor */
+.journal-editor { flex: 1; overflow-y: auto; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius-lg); padding: 20px; }
+.journal-editor__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.journal-editor__date { font-size: 1.05rem; font-weight: 600; }
+.journal-editor__saved-badge { background: var(--accent-green-bg); color: var(--accent-green); padding: 2px 10px; border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 600; }
+
+.journal-section { margin-bottom: 16px; }
+.journal-section__label { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.journal-section__pnl { font-size: 0.85rem; text-transform: none; letter-spacing: 0; }
+.journal-section__pnl.positive { color: var(--profit-color); }
+.journal-section__pnl.negative { color: var(--loss-color); }
+
+/* Mood selector */
+.mood-selector { display: flex; gap: 6px; flex-wrap: wrap; }
+.mood-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-primary); border: 1px solid var(--border-primary); transition: all var(--transition-fast); min-width: 75px; }
+.mood-btn:hover { border-color: var(--accent-blue); background: var(--bg-hover); }
+.mood-btn--active { border-color: var(--accent-blue); background: var(--accent-blue-bg); box-shadow: 0 0 0 1px var(--accent-blue); }
+.mood-btn__emoji { font-size: 1.4rem; }
+.mood-btn__label { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); }
+
+/* Market condition */
+.market-condition-selector { display: flex; gap: 6px; flex-wrap: wrap; }
+.market-btn { padding: 6px 12px; border-radius: var(--radius-full); background: var(--bg-primary); border: 1px solid var(--border-primary); font-size: 0.78rem; color: var(--text-secondary); transition: all var(--transition-fast); }
+.market-btn:hover { border-color: var(--accent-blue); }
+.market-btn--active { border-color: var(--accent-blue); background: var(--accent-blue-bg); color: var(--accent-blue); }
+
+/* Textarea */
+.journal-textarea { width: 100%; padding: 10px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.88rem; line-height: 1.6; resize: vertical; transition: border-color var(--transition-fast); font-family: var(--font-family); }
+.journal-textarea:focus { outline: none; border-color: var(--accent-blue); }
+.journal-textarea::placeholder { color: var(--text-muted); }
+.journal-textarea--sm { min-height: 70px; }
+.journal-textarea--lg { min-height: 140px; }
+
+/* Trades list */
+.journal-trades-list { display: flex; flex-direction: column; gap: 4px; }
+.journal-trade-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); }
+.journal-trade-card__instrument { font-weight: 600; font-size: 0.85rem; }
+.journal-trade-card__side { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); }
+.journal-trade-card__side--long { background: var(--profit-bg); color: var(--profit-color); }
+.journal-trade-card__side--short { background: var(--loss-bg); color: var(--loss-color); }
+.journal-trade-card__pnl { margin-left: auto; font-weight: 600; font-size: 0.85rem; }
+.journal-trade-card__pnl.positive { color: var(--profit-color); }
+.journal-trade-card__pnl.negative { color: var(--loss-color); }
+.journal-trade-card__rating { color: var(--accent-orange); font-size: 0.75rem; }
+
+.journal-editor__actions { padding-top: 12px; border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end; }

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { rulesApi } from '../../services/api';
 import type { Rule } from '../../types';
 import './Rules.css';
 
 export default function Rules() {
+  const { t } = useTranslation();
   const [rules, setRules] = useState<Rule[]>([]);
   const [newRuleName, setNewRuleName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export default function Rules() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this rule? It will be removed from all trade checklists.')) return;
+    if (!window.confirm(t('rules.deleteConfirm', 'Xóa quy tắc này? Nó sẽ bị loại bỏ khỏi tất cả các checklist lệnh.'))) return;
     try {
       await rulesApi.delete(id);
       await fetchRules();
@@ -127,9 +129,9 @@ export default function Rules() {
     <div className="rules-page">
       <div className="rules-page__header">
         <div>
-          <h1 className="rules-page__title">Trading Rules</h1>
+          <h1 className="rules-page__title">{t('layout.rules', 'Quy tắc giao dịch')}</h1>
           <p className="rules-page__subtitle">
-            Define your trading checklist. Active rules will appear when you log a trade.
+            {t('rules.subtitle', 'Định nghĩa các quy tắc của bạn. Các quy tắc đang bật sẽ xuất hiện khi bạn ghi lệnh.')}
           </p>
         </div>
       </div>
@@ -138,20 +140,20 @@ export default function Rules() {
         <input
           type="text"
           className="rules-add-form__input"
-          placeholder="Add a new rule... (e.g. Wait for confirmation signal)"
+          placeholder={t('rules.placeholder', 'Thêm quy tắc mới... (ví dụ: Chờ tín hiệu xác nhận)')}
           value={newRuleName}
           onChange={e => setNewRuleName(e.target.value)}
           id="input-new-rule"
         />
         <button type="submit" className="btn btn--primary" disabled={!newRuleName.trim()}>
-          + Add Rule
+          + {t('rules.add', 'Thêm quy tắc')}
         </button>
       </form>
 
       <div className="rules-list">
         {rules.length === 0 ? (
           <div className="rules-list__empty">
-            No rules yet. Add your first trading rule above!
+            {t('rules.empty', 'Chưa có quy tắc nào. Thêm quy tắc đầu tiên!')}
           </div>
         ) : (
           rules.map((rule, idx) => (
@@ -170,7 +172,7 @@ export default function Rules() {
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
-              <span className="rule-card__handle" title="Drag to reorder">⠿</span>
+              <span className="rule-card__handle" title={t('rules.dragTitle', 'Kéo để sắp xếp')}>⠿</span>
 
               <div className="rule-card__content">
                 {editingId === rule.id ? (
@@ -200,10 +202,10 @@ export default function Rules() {
 
               <div className="rule-card__actions">
                 <button className="btn btn--secondary btn--sm" onClick={() => handleStartEdit(rule)}>
-                  Edit
+                  {t('journal.edit', 'Sửa')}
                 </button>
                 <button className="btn btn--danger btn--sm" onClick={() => handleDelete(rule.id)}>
-                  Delete
+                  {t('journal.delete', 'Xóa')}
                 </button>
               </div>
             </div>

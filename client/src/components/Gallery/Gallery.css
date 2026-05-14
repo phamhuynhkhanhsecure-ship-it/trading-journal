@@ -325,12 +325,77 @@
   height: 100%;
 }
 
+.lightbox__zoom-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  max-height: calc(100vh - 180px);
+  position: relative;
+  border-radius: var(--radius-md);
+  user-select: none;
+}
+
 .lightbox__img {
   max-width: 100%;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 180px);
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  will-change: transform;
+}
+
+/* ===== Lightbox Zoom Toolbar ===== */
+.lightbox__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.lightbox__zoom-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.lightbox__zoom-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.lightbox__zoom-btn--reset {
+  margin-left: 4px;
+  font-size: 1.2rem;
+}
+
+.lightbox__zoom-level {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 44px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .lightbox__info {
@@ -399,4 +464,51 @@
 .lightbox__filename {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== Pagination ===== */
+.gallery-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  padding-bottom: 20px;
+}
+
+.gallery-pagination__btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.gallery-pagination__btn:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: rgba(88, 166, 255, 0.1);
+  color: var(--accent-blue);
+}
+
+.gallery-pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-tertiary);
+}
+
+.gallery-pagination__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gallery-pagination__separator {
+  color: var(--border-secondary);
 }

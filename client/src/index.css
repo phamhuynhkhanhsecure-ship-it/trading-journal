@@ -1,43 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ===== Design Tokens ===== */
+/* ===== Design Tokens (Premium Slate & Emerald) ===== */
 :root {
-  /* Dark Theme (Default) */
-  --bg-primary: #0d1117;
-  --bg-secondary: #161b22;
-  --bg-tertiary: #1c2128;
-  --bg-elevated: #21262d;
-  --bg-hover: #292e36;
+  /* Dark Theme (Premium Slate) */
+  --bg-primary: #0f172a; /* Slate 900 - Deep Rich Navy Grey */
+  --bg-secondary: #1e293b; /* Slate 800 - Elevated Cards */
+  --bg-tertiary: #334155; /* Slate 700 - Hover & Borders */
+  --bg-elevated: #1e293b;
+  --bg-hover: #334155;
 
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --text-tertiary: #6e7681;
-  --text-muted: #484f58;
+  --text-primary: #f8fafc; /* Slate 50 - Crisp White */
+  --text-secondary: #94a3b8; /* Slate 400 - Readable Muted */
+  --text-tertiary: #64748b; /* Slate 500 */
+  --text-muted: #475569; /* Slate 600 */
 
-  --border-primary: #30363d;
-  --border-secondary: #21262d;
+  --border-primary: #334155; /* Slate 700 */
+  --border-secondary: #1e293b;
 
-  --accent-blue: #58a6ff;
-  --accent-blue-bg: rgba(56, 139, 253, 0.15);
-  --accent-green: #3fb950;
-  --accent-green-bg: rgba(63, 185, 80, 0.1);
-  --accent-red: #f85149;
-  --accent-red-bg: rgba(248, 81, 73, 0.1);
-  --accent-orange: #d29922;
-  --accent-purple: #bc8cff;
+  --accent-blue: #3b82f6; /* Blue 500 */
+  --accent-blue-bg: rgba(59, 130, 246, 0.15);
+  --accent-green: #10b981; /* Emerald 500 */
+  --accent-green-bg: rgba(16, 185, 129, 0.1);
+  --accent-red: #ef4444; /* Red 500 */
+  --accent-red-bg: rgba(239, 68, 68, 0.1);
+  --accent-orange: #f59e0b; /* Amber 500 */
+  --accent-purple: #8b5cf6; /* Violet 500 */
 
-  --profit-color: #3fb950;
-  --profit-bg: rgba(63, 185, 80, 0.12);
-  --profit-bg-strong: rgba(63, 185, 80, 0.2);
-  --loss-color: #f85149;
-  --loss-bg: rgba(248, 81, 73, 0.12);
-  --loss-bg-strong: rgba(248, 81, 73, 0.25);
-  --neutral-color: #8b949e;
+  /* Trading Colors */
+  --profit-color: #10b981; /* Emerald 500 - Vibrant Green */
+  --profit-bg: rgba(16, 185, 129, 0.12);
+  --profit-bg-strong: rgba(16, 185, 129, 0.25);
+  --loss-color: #ef4444; /* Red 500 - Sharp Crimson */
+  --loss-bg: rgba(239, 68, 68, 0.12);
+  --loss-bg-strong: rgba(239, 68, 68, 0.25);
+  --neutral-color: #94a3b8; /* Slate 400 */
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -55,43 +56,44 @@
   --header-height: 60px;
 }
 
-/* Light Theme */
+/* Light Theme (Premium Slate & Emerald) */
 [data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f6f8fa;
-  --bg-tertiary: #eef1f5;
+  --bg-primary: #f8fafc; /* Slate 50 - Anti-glare Off-White */
+  --bg-secondary: #ffffff; /* Pure White - Elevated Cards */
+  --bg-tertiary: #f1f5f9; /* Slate 100 - Active / Hover */
   --bg-elevated: #ffffff;
-  --bg-hover: #f0f2f5;
+  --bg-hover: #f1f5f9;
 
-  --text-primary: #1f2328;
-  --text-secondary: #656d76;
-  --text-tertiary: #8b949e;
-  --text-muted: #afb8c1;
+  --text-primary: #0f172a; /* Slate 900 - Near Black */
+  --text-secondary: #475569; /* Slate 600 - Perfect Reading Contrast */
+  --text-tertiary: #94a3b8; /* Slate 400 */
+  --text-muted: #cbd5e1; /* Slate 300 */
 
-  --border-primary: #d0d7de;
-  --border-secondary: #e1e4e8;
+  --border-primary: #e2e8f0; /* Slate 200 - Soft Dividers */
+  --border-secondary: #f1f5f9; /* Slate 100 */
 
-  --accent-blue: #0969da;
-  --accent-blue-bg: rgba(9, 105, 218, 0.1);
-  --accent-green: #1a7f37;
-  --accent-green-bg: rgba(26, 127, 55, 0.08);
-  --accent-red: #cf222e;
-  --accent-red-bg: rgba(207, 34, 46, 0.08);
-  --accent-orange: #9a6700;
-  --accent-purple: #8250df;
+  --accent-blue: #2563eb; /* Blue 600 - Accessible on white */
+  --accent-blue-bg: rgba(37, 99, 235, 0.08);
+  --accent-green: #059669; /* Emerald 600 */
+  --accent-green-bg: rgba(5, 150, 105, 0.08);
+  --accent-red: #dc2626; /* Red 600 */
+  --accent-red-bg: rgba(220, 38, 38, 0.08);
+  --accent-orange: #d97706; /* Amber 600 */
+  --accent-purple: #7c3aed; /* Violet 600 */
 
-  --profit-color: #1a7f37;
-  --profit-bg: rgba(26, 127, 55, 0.08);
-  --profit-bg-strong: rgba(26, 127, 55, 0.15);
-  --loss-color: #cf222e;
-  --loss-bg: rgba(207, 34, 46, 0.08);
-  --loss-bg-strong: rgba(207, 34, 46, 0.18);
-  --neutral-color: #656d76;
+  /* Trading Colors */
+  --profit-color: #059669; /* Emerald 600 */
+  --profit-bg: rgba(5, 150, 105, 0.08);
+  --profit-bg-strong: rgba(5, 150, 105, 0.15);
+  --loss-color: #dc2626; /* Red 600 */
+  --loss-bg: rgba(220, 38, 38, 0.08);
+  --loss-bg-strong: rgba(220, 38, 38, 0.15);
+  --neutral-color: #64748b; /* Slate 500 */
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
 }
 
 /* ===== Global Reset & Base ===== */

@@ -12,6 +12,8 @@ interface CalendarDayCellProps {
   onAddTrade: (day: number) => void;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export default function CalendarDayCell({
   day,
   year,
@@ -22,6 +24,7 @@ export default function CalendarDayCell({
   onDayClick,
   onAddTrade,
 }: CalendarDayCellProps) {
+  const { t } = useTranslation();
   if (day === null) {
     return <div className="day-cell day-cell--empty" />;
   }
@@ -72,14 +75,14 @@ export default function CalendarDayCell({
             {formatCurrencyShort(pnl)}
           </span>
           <span className="day-cell__trades">
-            {dayData!.tradeCount} trade{dayData!.tradeCount !== 1 ? 's' : ''}
+            {dayData!.tradeCount} {t('calendar.trades', 'lệnh')}
           </span>
         </>
       )}
 
       {isSaturday && weekSummary && (
         <div className="week-summary">
-          <span className="week-summary__label">Week {weekSummary.weekNumber}</span>
+          <span className="week-summary__label">{t('calendar.week', 'Tuần')} {weekSummary.weekNumber}</span>
           <span
             className={`week-summary__pnl ${
               weekSummary.totalPnl > 0
@@ -92,7 +95,7 @@ export default function CalendarDayCell({
             {formatCurrencyShort(weekSummary.totalPnl)}
           </span>
           <span className="week-summary__trades">
-            {weekSummary.totalTrades} trade{weekSummary.totalTrades !== 1 ? 's' : ''}
+            {weekSummary.totalTrades} {t('calendar.trades', 'lệnh')}
           </span>
         </div>
       )}

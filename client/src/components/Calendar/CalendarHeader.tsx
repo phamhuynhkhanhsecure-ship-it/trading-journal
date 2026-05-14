@@ -1,4 +1,5 @@
-import { formatCurrencyShort, getMonthNameShort } from '../../utils/calendarUtils';
+import { useTranslation } from 'react-i18next';
+import { formatCurrencyShort } from '../../utils/calendarUtils';
 import type { MonthData } from '../../types';
 
 interface CalendarHeaderProps {
@@ -14,6 +15,7 @@ export default function CalendarHeader({
   onNextMonth,
   onToday,
 }: CalendarHeaderProps) {
+  const { t } = useTranslation();
   const pnlClass =
     monthData.totalPnl > 0
       ? 'calendar-header__monthly-pnl--profit'
@@ -34,7 +36,7 @@ export default function CalendarHeader({
             ‹
           </button>
           <span className="calendar-header__month-label">
-            {getMonthNameShort(monthData.month)} {monthData.year}
+            {t(`calendar.months.${monthData.month}`)} {monthData.year}
           </span>
           <button
             className="calendar-header__nav-btn"
@@ -47,7 +49,7 @@ export default function CalendarHeader({
         </div>
 
         <span className={`calendar-header__monthly-pnl ${pnlClass}`}>
-          Monthly P/L: {formatCurrencyShort(monthData.totalPnl)}
+          {t('calendar.monthlyPnl', 'L/L tháng:')} {formatCurrencyShort(monthData.totalPnl)}
         </span>
 
         <button
@@ -55,7 +57,7 @@ export default function CalendarHeader({
           onClick={onToday}
           id="btn-today"
         >
-          Today
+          {t('calendar.today', 'Hôm nay')}
         </button>
       </div>
     </div>

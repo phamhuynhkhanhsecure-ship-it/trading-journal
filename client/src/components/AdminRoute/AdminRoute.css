@@ -1,0 +1,33 @@
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  padding: 4rem;
+}
+
+.admin-access-denied {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 6rem 2rem;
+  text-align: center;
+  color: var(--danger-color);
+  animation: fadeIn 0.3s ease;
+}
+
+.admin-access-denied h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-access-denied p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
