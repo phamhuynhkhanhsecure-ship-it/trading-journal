@@ -1,0 +1,14 @@
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # Capture 100% of traces for development
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://${EUREKA_USERNAME:admin}:${EUREKA_PASSWORD}@localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true

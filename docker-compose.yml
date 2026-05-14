@@ -1,0 +1,210 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: trading-journal-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - trading-network
+    command: redis-server --save 60 1 --loglevel warning
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: trading-journal-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - trading-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: trading-journal-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    networks:
+      - trading-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: trading-journal-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - trading-network
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: trading-journal-config-server
+    ports:
+      - "8888:8888"
+    env_file: .env
+    environment:
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - trading-network
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+    container_name: trading-journal-discovery-server
+    ports:
+      - "8761:8761"
+    env_file: .env
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888/
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://$${EUREKA_USERNAME:-admin}:$${EUREKA_PASSWORD}@localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - trading-network
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: trading-journal-user-service
+    ports:
+      - "8081:8081"
+    env_file: .env
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888/
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+      - REDIS_HOST=redis
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_started
+    networks:
+      - trading-network
+
+  server-java:
+    build:
+      context: ./server-java
+    container_name: trading-journal-server-java
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888/
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - REDIS_HOST=redis
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - trading-network
+
+  server-java-2:
+    build:
+      context: ./server-java
+    container_name: trading-journal-server-java-2
+    ports:
+      - "8082:8080"
+    env_file: .env
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888/
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - REDIS_HOST=redis
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - trading-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: trading-journal-api-gateway
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888/
+      - EUREKA_URL=http://${EUREKA_USERNAME:-admin}:${EUREKA_PASSWORD}@discovery-server:8761/eureka/
+      - ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+      - REDIS_HOST=redis
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+      server-java:
+        condition: service_started
+      server-java-2:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - trading-network
+
+  client:
+    build:
+      context: ./client
+    container_name: trading-journal-client
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
+
+volumes:
+  redis_data:
