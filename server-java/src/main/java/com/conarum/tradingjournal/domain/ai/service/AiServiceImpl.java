@@ -5,12 +5,8 @@ import com.conarum.tradingjournal.domain.trade.repository.TradeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import com.conarum.tradingjournal.domain.ai.client.AiServiceClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.stream.Collectors;
 public class AiServiceImpl implements AiService {
 
     private final TradeRepository tradeRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final AiServiceClient aiServiceClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${gemini.api.key}")
@@ -32,16 +28,9 @@ public class AiServiceImpl implements AiService {
         if (geminiApiKey == null || geminiApiKey.isEmpty()) {
             throw new RuntimeException("GEMINI_API_KEY is not configured");
         }
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey;
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
         
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-            Map<String, Object> body = response.getBody();
+            Map<String, Object> body = aiServiceClient.generateContent(geminiApiKey, requestBody);
             if (body != null && body.containsKey("candidates")) {
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
                 if (!candidates.isEmpty()) {

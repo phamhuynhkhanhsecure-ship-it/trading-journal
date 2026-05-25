@@ -9,9 +9,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
 @SpringBootApplication
 @EnableMongoAuditing
 @EnableDiscoveryClient
+@EnableFeignClients
 @EnableScheduling
 @OpenAPIDefinition(info = @Info(title = "Trading Journal Server API", version = "v1"))
 public class TradingJournalApplication {
