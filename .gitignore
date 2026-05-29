@@ -147,3 +147,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# Agent
+agent/
