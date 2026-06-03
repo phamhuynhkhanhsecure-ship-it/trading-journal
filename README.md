@@ -29,7 +29,6 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 - [Environment Variables](#-environment-variables)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
-- [License](#-license)
 
 ---
 
@@ -685,15 +684,3 @@ npm run build    # Output → client/dist/
 3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is private and proprietary. All rights reserved by **Conarum**.
-
----
-
-<p align="center">
-  Made with ❤️ by <strong>Conarum</strong>
-</p>
