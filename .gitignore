@@ -150,3 +150,6 @@ $RECYCLE.BIN/
 
 # Agent
 agent/
+
+# Claude Code local config (agents, memory, settings — not for repo)
+.claude/
