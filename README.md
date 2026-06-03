@@ -4,10 +4,16 @@ A production-grade, full-stack **microservices** application for tracking, analy
 
 Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, and **Docker**.
 
+<!-- 📸 THAY ẢNH HERO TẠI ĐÂY: Chèn đường dẫn ảnh Dashboard tổng quan đẹp nhất của bạn -->
+<p align="center">
+  <img src="docs/hero-dashboard.png" alt="Trading Dashboard Overview" width="100%">
+</p>
+
 ---
 
 ## 📋 Table of Contents
 
+- [📸 UI Showcase](#-ui-showcase)
 - [🤖 AI-Powered Capabilities](#-ai-powered-capabilities)
 - [Architecture Overview](#-architecture-overview)
 - [Tech Stack](#-tech-stack)
@@ -30,6 +36,17 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 - [Environment Variables](#-environment-variables)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
+
+---
+
+## 📸 UI Showcase
+
+<!-- 📸 THAY ẢNH SHOWCASE TẠI ĐÂY: Điền đường dẫn các ảnh vào thẻ src tương ứng -->
+| Trading Dashboard (Recharts) | AI Trading Coach (Gemini) |
+|:---:|:---:|
+| <img src="docs/dashboard-charts.png" width="400"/> | <img src="docs/ai-chat-interface.png" width="400"/> |
+| **Trade Entry Calculator** | **Performance Heatmap** |
+| <img src="docs/trade-calculator.png" width="400"/> | <img src="docs/performance-heatmap.png" width="400"/> |
 
 ---
 
