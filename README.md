@@ -261,12 +261,14 @@ trading-journal/
 | `/admin/users` | User Management | Quản lý người dùng (Admin) |
 | `/pricing` | Pricing | Trang đăng ký gói Premium |
 
-**Key Features:**
-- 🌓 Dark/Light theme toggle
-- 🌐 Đa ngôn ngữ (English / Tiếng Việt)
-- 🤖 AI Chat Widget tích hợp
-- 🔐 RBAC — ẩn/hiện menu & chức năng theo quyền
-- 📊 Charts trực quan với Recharts
+**🚀 Highlighted React JS Features:**
+- 📊 **Dashboard với Recharts/D3** cho equity curve, win-rate, risk/reward ratio charts.
+- ⚡ **Real-time P&L updates** qua WebSocket connection với Spring Boot.
+- 🤖 **Giao diện chat với AI Trading Coach** (React UI → BE → Gemini API).
+- 🧮 **Trade entry form** với real-time risk calculator.
+- 🌡️ **Performance heatmap** theo ngày/tuần/tháng.
+- 🔐 **Dynamic RBAC** — ẩn/hiện menu & chức năng tự động theo phân quyền.
+- 🌓 **Context API** — Quản lý State toàn cục cho Dark/Light theme & Đa ngôn ngữ (i18n).
 
 ---
 
