@@ -16,6 +16,7 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 - [📸 UI Showcase](#-ui-showcase)
 - [🤖 AI-Powered Capabilities](#-ai-powered-capabilities)
 - [Architecture Overview](#-architecture-overview)
+- [Saga Pattern & Transactional Outbox](#-saga-pattern--transactional-outbox)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Microservices Detail](#-microservices-detail)
@@ -107,6 +108,88 @@ This project deeply integrates with **Google Gemini AI** to provide an intellige
 
 ---
 
+## 🔄 Saga Pattern & Transactional Outbox
+
+### Saga Choreography — Premium Billing Flow
+
+The **Purchase Premium** feature uses a **Choreography-based Saga** across two services, with every Kafka publish going through the **Transactional Outbox** pattern to guarantee exactly-once delivery.
+
+```
+User clicks "Buy Premium"
+         │
+         ▼
+[BillingController] POST /api/v1/billing/purchase-premium
+         │  "Initiates the Saga choreography"
+         ▼
+[BillingServiceImpl] ── saves BillingTransaction ──► MongoDB
+         │              saves PaymentProcessedEvent ──► outbox_events (PENDING)
+         ▼
+[OutboxScheduler] @Scheduled(fixedDelay=5s)
+         │  polls outbox_events WHERE status=PENDING
+         ▼
+[Kafka] topic: billing-events
+         │
+         ▼
+[SagaBillingConsumerService] @KafkaListener
+    Saga Step 2: Upgrades user role in MongoDB
+         │  saves UserRoleUpgradedEvent ──► outbox_events (PENDING)
+         ▼
+[OutboxScheduler] @Scheduled(fixedDelay=5s)
+         │
+         ▼
+[Kafka] topic: user-role-events
+         │
+         ▼
+[SagaUserRoleConsumerService] @KafkaListener  (server-java)
+    Saga Step 3: Invalidates Redis RBAC cache → user gets new permissions instantly
+```
+
+### Implementation Details
+
+#### Transactional Outbox — `user-service`
+
+| Class | Path | Role |
+|:------|:-----|:-----|
+| `OutboxEvent` | `user-service/.../common/model/OutboxEvent.java` | MongoDB document (`outbox_events` collection) |
+| `OutboxEventRepository` | `user-service/.../infrastructure/outbox/OutboxEventRepository.java` | `findByStatusOrderByCreatedAtAsc("PENDING")` |
+| `OutboxScheduler` | `user-service/.../infrastructure/outbox/OutboxScheduler.java` | `@Scheduled` poller — publishes to Kafka & marks `SENT` |
+| `KafkaAuditProducerService` | `user-service/.../audit/producer/KafkaAuditProducerService.java` | Saves audit events to outbox |
+
+#### Transactional Outbox — `server-java`
+
+| Class | Path | Role |
+|:------|:-----|:-----|
+| `TradeOutboxEvent` | `server-java/.../trade/model/TradeOutboxEvent.java` | MongoDB document (`trade_outbox_events` collection) |
+| `TradeOutboxEventRepository` | `server-java/.../trade/repository/TradeOutboxEventRepository.java` | `findByStatusOrderByCreatedAtAsc("PENDING")` |
+| `TradeOutboxScheduler` | `server-java/.../trade/service/TradeOutboxScheduler.java` | `@Scheduled` poller — publishes `TradeCreatedEvent` to Kafka |
+| `TradeServiceImpl` | `server-java/.../trade/service/TradeServiceImpl.java` | Saves trade + outbox event **atomically** in same MongoDB transaction |
+
+#### Saga Steps — `user-service`
+
+| Class | Path | Saga Step |
+|:------|:-----|:----------|
+| `BillingController` | `user-service/.../billing/controller/BillingController.java` | **Initiator** — triggers the Saga |
+| `BillingServiceImpl` | `user-service/.../billing/service/BillingServiceImpl.java` | **Step 1** — saves `BillingTransaction` + `PaymentProcessedEvent` to outbox |
+| `SagaBillingConsumerService` | `user-service/.../billing/consumer/SagaBillingConsumerService.java` | **Step 2** — consumes `PaymentProcessedEvent`, upgrades user role, emits `UserRoleUpgradedEvent` via outbox |
+
+#### Saga Steps — `server-java`
+
+| Class | Path | Saga Step |
+|:------|:-----|:----------|
+| `SagaUserRoleConsumerService` | `server-java/.../analytics/service/SagaUserRoleConsumerService.java` | **Step 3** — consumes `UserRoleUpgradedEvent`, invalidates Redis RBAC cache |
+
+### Why Outbox? (Dual-write problem solved)
+
+Without Outbox, a crash between saving to DB and calling `kafkaTemplate.send()` would lose the event silently.  
+With Outbox: **DB save and event creation are atomic** (same MongoDB write). The scheduler retries independently until Kafka confirms delivery.
+
+```
+❌ Without Outbox:  save(BillingTransaction) → [CRASH] → Kafka never receives event
+✅ With Outbox:     save(BillingTransaction + OutboxEvent atomically) → scheduler retries → Kafka guaranteed
+```
+
+---
+
 ## 🛠 Tech Stack
 
 ### Backend
@@ -121,7 +204,7 @@ This project deeply integrates with **Google Gemini AI** to provide an intellige
 | **Spring Security + OAuth2** | — | Authentication & authorization |
 | **Spring Data MongoDB** | — | Database access |
 | **Spring Data Redis** | — | Caching & RBAC storage |
-| **Spring Kafka** | — | Event-driven messaging |
+| **Spring Kafka** | — | Event-driven messaging (Saga choreography, Outbox pattern) |
 | **OpenFeign** | — | Inter-service communication |
 | **Resilience4j** | — | Circuit breaker & retry |
 | **MapStruct** | 1.5.5 | DTO mapping |
@@ -342,7 +425,7 @@ trading-journal/
 | `role` | `/api/v1/admin/roles` | Roles & permissions management (RBAC) |
 | `menu` | `/api/v1/admin/menus` | Dynamic UI menus management |
 | `audit` | `/api/v1/admin/audit-logs` | Admin activity logging |
-| `billing` | `/api/v1/billing` | Premium billing system |
+| `billing` | `/api/v1/billing` | Premium billing system (initiates Saga choreography) |
 
 **RBAC Model:**
 ```
@@ -424,6 +507,8 @@ Provides centralized configuration for all services:
 | 🖼 **Gallery** | Chart image gallery (Google Drive) |
 | 🧮 **Calculator** | Risk & position size calculation |
 | 📤 **Excel Export** | Export data to .xlsx files |
+| 🔄 **Saga Pattern** | Choreography-based Saga for Premium billing flow across services |
+| 📬 **Transactional Outbox** | Guarantees at-least-once Kafka delivery without dual-write issues |
 | 🔐 **Full RBAC** | User → Group → Role → Permission (dynamic, cached in Redis) |
 | 👤 **Admin Panel** | Manage users, groups, roles, menus, and audit logs |
 | 💳 **Billing** | Premium subscription system |
