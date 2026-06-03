@@ -267,25 +267,25 @@ trading-journal/
 
 | Route | Page | Description |
 |:------|:-----|:------------|
-| `/` | Calendar | Calendar view hiển thị trades theo ngày |
-| `/analytics` | Analytics | Dashboard phân tích hiệu suất trading |
-| `/journal` | Journal | Nhật ký giao dịch hàng ngày |
-| `/playbook` | Playbook | Quản lý chiến lược giao dịch |
-| `/rules` | Rules | Quản lý quy tắc trading |
-| `/tags` | Tags | Quản lý tags phân loại |
-| `/gallery` | Gallery | Thư viện ảnh chụp màn hình giao dịch |
-| `/calculator` | Calculator | Máy tính giao dịch (risk, position size) |
-| `/admin/users` | User Management | Quản lý người dùng (Admin) |
-| `/pricing` | Pricing | Trang đăng ký gói Premium |
+| `/` | Calendar | Calendar view showing trades by day |
+| `/analytics` | Analytics | Trading performance analysis dashboard |
+| `/journal` | Journal | Daily trading journal entries |
+| `/playbook` | Playbook | Trading strategies management |
+| `/rules` | Rules | Trading rules management |
+| `/tags` | Tags | Categorization tags management |
+| `/gallery` | Gallery | Trading screenshots gallery |
+| `/calculator` | Calculator | Trading calculator (risk, position size) |
+| `/admin/users` | User Management | User management (Admin) |
+| `/pricing` | Pricing | Premium subscription page |
 
 **🚀 Highlighted React JS Features:**
-- 📊 **Dashboard với Recharts/D3** cho equity curve, win-rate, risk/reward ratio charts.
-- ⚡ **Real-time P&L updates** qua WebSocket connection với Spring Boot.
-- 🤖 **Giao diện chat với AI Trading Coach** (React UI → BE → Gemini API).
-- 🧮 **Trade entry form** với real-time risk calculator.
-- 🌡️ **Performance heatmap** theo ngày/tuần/tháng.
-- 🔐 **Dynamic RBAC** — ẩn/hiện menu & chức năng tự động theo phân quyền.
-- 🌓 **Context API** — Quản lý State toàn cục cho Dark/Light theme & Đa ngôn ngữ (i18n).
+- 📊 **Dashboard with Recharts/D3** for equity curve, win-rate, risk/reward ratio charts.
+- ⚡ **Real-time P&L updates** via WebSocket connection with Spring Boot.
+- 🤖 **AI Trading Coach Chat UI** (React UI → BE → Gemini API).
+- 🧮 **Trade entry form** with real-time risk calculator.
+- 🌡️ **Performance heatmap** by day/week/month.
+- 🔐 **Dynamic RBAC** — automatically show/hide menus and features based on permissions.
+- 🌓 **Context API** — Global state management for Dark/Light theme & Internationalization (i18n).
 
 ---
 
@@ -302,23 +302,23 @@ trading-journal/
 
 | Module | Description |
 |:-------|:------------|
-| `trade` | CRUD giao dịch, upload ảnh lên Google Drive, gallery |
-| `ai` | AI Coach (phân tích 100 trades gần nhất), AI Chat (hỏi đáp), AI Vision (đọc chart từ ảnh) |
-| `analytics` | Phân tích theo: ngày trong tuần, instrument, side (Long/Short), tag, playbook, mood, streaks, risk, rolling |
-| `journal` | CRUD nhật ký giao dịch theo ngày |
-| `playbook` | CRUD chiến lược giao dịch |
-| `rule` | CRUD & sắp xếp thứ tự quy tắc trading |
-| `tag` | CRUD tags & gợi ý tags |
-| `export` | Export dữ liệu ra file Excel (.xlsx) |
+| `trade` | Trade CRUD, Google Drive image upload, gallery |
+| `ai` | AI Coach (analyzes last 100 trades), AI Chat, AI Vision (reads charts from images) |
+| `analytics` | Comprehensive analysis by: day of week, instrument, side (Long/Short), tag, playbook, mood, streaks, risk, rolling |
+| `journal` | Daily journal entries CRUD |
+| `playbook` | Trading strategies CRUD |
+| `rule` | Trading rules CRUD & ordering |
+| `tag` | Tags CRUD & tag suggestions |
+| `export` | Export data to Excel files (.xlsx) |
 
 **AI Integration (Google Gemini):**
-- 🧠 **AI Coach** — Phân tích 100 giao dịch gần nhất, đánh giá win rate, điểm mạnh/yếu, lời khuyên
-- 💬 **AI Chat** — Chat với AI có ngữ cảnh trades, hỗ trợ Tiếng Việt/English/中文
-- 👁 **AI Vision** — Phân tích ảnh chart (TradingView), trích xuất instrument, entry/SL/TP tự động
+- 🧠 **AI Coach** — Analyzes the last 100 trades, evaluates win rate, strengths/weaknesses, and provides advice.
+- 💬 **AI Chat** — Context-aware AI chat, supporting Vietnamese/English/Chinese.
+- 👁 **AI Vision** — Analyzes chart images (TradingView) to automatically extract instrument, entry/SL/TP.
 
 **Google Drive Integration:**
-- Upload ảnh giao dịch lên Google Drive
-- Image proxy endpoint phục vụ ảnh qua API
+- Upload trade images directly to Google Drive.
+- Image proxy endpoint to serve images via API.
 
 ---
 
@@ -335,22 +335,22 @@ trading-journal/
 
 | Module | API Endpoint | Description |
 |:-------|:-------------|:------------|
-| `user` | `/api/v1/users` | Profile người dùng (me) |
-| `user` (admin) | `/api/v1/admin/users` | Quản lý người dùng (Admin) |
-| `user` (internal) | `/api/internal/users` | Đồng bộ user giữa services |
-| `group` | `/api/v1/admin/groups` | Quản lý nhóm người dùng (RBAC) |
-| `role` | `/api/v1/admin/roles` | Quản lý vai trò & quyền hạn (RBAC) |
-| `menu` | `/api/v1/admin/menus` | Quản lý menu UI động |
-| `audit` | `/api/v1/admin/audit-logs` | Ghi log hoạt động admin |
-| `billing` | `/api/v1/billing` | Hệ thống thanh toán Premium |
+| `user` | `/api/v1/users` | Current user profile (me) |
+| `user` (admin) | `/api/v1/admin/users` | User management (Admin) |
+| `user` (internal) | `/api/internal/users` | User synchronization between services |
+| `group` | `/api/v1/admin/groups` | User groups management (RBAC) |
+| `role` | `/api/v1/admin/roles` | Roles & permissions management (RBAC) |
+| `menu` | `/api/v1/admin/menus` | Dynamic UI menus management |
+| `audit` | `/api/v1/admin/audit-logs` | Admin activity logging |
+| `billing` | `/api/v1/billing` | Premium billing system |
 
 **RBAC Model:**
 ```
 User → Groups → Roles → Permissions (API Lines + Menus)
 ```
-- Permissions được cache trong Redis
-- Super Admin có thể bypass tất cả quyền
-- Configurable qua env var `APP_SECURITY_SUPER_ADMINS`
+- Permissions are cached in Redis.
+- Super Admins can bypass all permission checks.
+- Configurable via `APP_SECURITY_SUPER_ADMINS` environment variable.
 
 ---
 
@@ -372,13 +372,13 @@ User → Groups → Roles → Permissions (API Lines + Menus)
 | `/api/**` (catch-all) | `trading-journal-server` |
 
 **Features:**
-- 🔀 **Load Balancing** — Eureka-based (`lb://`) với 2 instances của server-java
-- 🛡 **Dynamic Authorization Filter** — Kiểm tra RBAC quyền từ Redis theo JWT email
-- 🔄 **Circuit Breaker** (Resilience4j) — slidingWindow: 10, failureRate: 50%, waitDuration: 5s
-- 🔁 **Retry** — 3 lần retry cho lỗi 502, 503, 504, 500
-- 🌐 **CORS** — Cho phép tất cả origins (development)
-- 📚 **Swagger UI** — Tổng hợp API docs từ tất cả services tại `/swagger-ui.html`
-- ⚡ **Fallback** — Trả response thay thế khi service downstream lỗi
+- 🔀 **Load Balancing** — Eureka-based (`lb://`) with 2 instances of the server-java service.
+- 🛡 **Dynamic Authorization Filter** — Checks RBAC permissions from Redis based on JWT email.
+- 🔄 **Circuit Breaker** (Resilience4j) — slidingWindow: 10, failureRate: 50%, waitDuration: 5s.
+- 🔁 **Retry** — 3 retries for 502, 503, 504, 500 errors.
+- 🌐 **CORS** — Allows all origins (development mode).
+- 📚 **Swagger UI** — Aggregated API documentation from all services at `/swagger-ui.html`.
+- ⚡ **Fallback** — Provides a fallback response when downstream services fail.
 
 ---
 
@@ -400,10 +400,10 @@ Dashboard: `http://localhost:8761`
 |:--|:--|
 | **Framework** | Spring Cloud Config Server |
 | **Port** | 8888 |
-| **Profile** | `native` (filesystem, không dùng Git) |
+| **Profile** | `native` (filesystem, no Git required) |
 | **Config Location** | `classpath:/config` |
 
-Cung cấp cấu hình chung cho tất cả services:
+Provides centralized configuration for all services:
 - Zipkin tracing endpoint
 - Eureka client configuration
 - Shared application properties
@@ -414,25 +414,25 @@ Cung cấp cấu hình chung cho tất cả services:
 
 | Feature | Description |
 |:--------|:------------|
-| 📊 **Trading Analytics** | Phân tích đa chiều: theo ngày, instrument, side, tag, playbook, mood, streaks, risk, rolling |
-| 🤖 **AI-Powered Insights** | Google Gemini — Coach, Chat, Vision (đọc chart từ ảnh) |
-| 📅 **Calendar View** | Xem tổng quan trades theo lịch |
-| 📓 **Daily Journal** | Nhật ký giao dịch hàng ngày |
-| 📖 **Playbook** | Quản lý chiến lược giao dịch |
-| 📏 **Trading Rules** | Thiết lập & theo dõi quy tắc |
-| 🏷 **Tags** | Phân loại giao dịch linh hoạt |
-| 🖼 **Gallery** | Thư viện ảnh chart (Google Drive) |
-| 🧮 **Calculator** | Tính toán risk & position size |
-| 📤 **Excel Export** | Xuất dữ liệu ra file .xlsx |
-| 🔐 **Full RBAC** | User → Group → Role → Permission (động, cache Redis) |
-| 👤 **Admin Panel** | Quản lý users, groups, roles, menus, audit logs |
-| 💳 **Billing** | Hệ thống đăng ký Premium |
-| 🌐 **i18n** | Tiếng Việt & English |
-| 🌓 **Dark/Light Theme** | Chuyển đổi giao diện |
-| 🔍 **Distributed Tracing** | Zipkin — theo dõi request xuyên services |
+| 📊 **Trading Analytics** | Multi-dimensional analysis: by day, instrument, side, tag, playbook, mood, streaks, risk, rolling |
+| 🤖 **AI-Powered Insights** | Google Gemini — Coach, Chat, Vision (read charts from images) |
+| 📅 **Calendar View** | Overview of trades in a calendar format |
+| 📓 **Daily Journal** | Daily trading journal entries |
+| 📖 **Playbook** | Trading strategies management |
+| 📏 **Trading Rules** | Set up & track trading rules |
+| 🏷 **Tags** | Flexible trade categorization |
+| 🖼 **Gallery** | Chart image gallery (Google Drive) |
+| 🧮 **Calculator** | Risk & position size calculation |
+| 📤 **Excel Export** | Export data to .xlsx files |
+| 🔐 **Full RBAC** | User → Group → Role → Permission (dynamic, cached in Redis) |
+| 👤 **Admin Panel** | Manage users, groups, roles, menus, and audit logs |
+| 💳 **Billing** | Premium subscription system |
+| 🌐 **i18n** | Vietnamese & English support |
+| 🌓 **Dark/Light Theme** | UI theme switching |
+| 🔍 **Distributed Tracing** | Zipkin — track requests across services |
 | 🛡 **Resilience** | Circuit breaker, retry, fallback |
-| ⚖ **Load Balancing** | 2 instances server-java, Eureka-based LB |
-| 📚 **API Documentation** | Swagger UI tổng hợp tại API Gateway |
+| ⚖ **Load Balancing** | 2 instances of server-java, Eureka-based load balancing |
+| 📚 **API Documentation** | Aggregated Swagger UI at the API Gateway |
 
 ---
 
@@ -584,48 +584,48 @@ All APIs are accessible through the API Gateway at `http://localhost:8000`.
 
 | Method | Endpoint | Description |
 |:-------|:---------|:------------|
-| `GET` | `/api/trades` | Lấy danh sách trades |
-| `POST` | `/api/trades` | Tạo trade mới |
-| `PUT` | `/api/trades/{id}` | Cập nhật trade |
-| `DELETE` | `/api/trades/{id}` | Xóa trade |
-| `POST` | `/api/ai/coach` | AI Coach phân tích |
-| `POST` | `/api/ai/chat` | AI Chat hỏi đáp |
-| `POST` | `/api/ai/vision` | AI Vision đọc chart |
-| `GET` | `/api/analytics/overview` | Tổng quan analytics |
-| `GET` | `/api/analytics/by-day-of-week` | Phân tích theo thứ |
-| `GET` | `/api/analytics/by-instrument` | Phân tích theo cặp tiền/mã |
-| `GET` | `/api/analytics/by-side` | Phân tích theo Long/Short |
-| `GET` | `/api/analytics/by-tag` | Phân tích theo tag |
-| `GET` | `/api/analytics/by-playbook` | Phân tích theo playbook |
-| `GET` | `/api/analytics/by-mood` | Phân tích theo tâm trạng |
-| `GET` | `/api/analytics/streaks` | Chuỗi thắng/thua |
-| `GET` | `/api/analytics/risk` | Phân tích risk |
+| `GET` | `/api/trades` | Get list of trades |
+| `POST` | `/api/trades` | Create a new trade |
+| `PUT` | `/api/trades/{id}` | Update a trade |
+| `DELETE` | `/api/trades/{id}` | Delete a trade |
+| `POST` | `/api/ai/coach` | Get AI Coach analysis |
+| `POST` | `/api/ai/chat` | Ask AI Chat a question |
+| `POST` | `/api/ai/vision` | Read chart via AI Vision |
+| `GET` | `/api/analytics/overview` | Analytics overview |
+| `GET` | `/api/analytics/by-day-of-week` | Analysis by day of the week |
+| `GET` | `/api/analytics/by-instrument` | Analysis by instrument |
+| `GET` | `/api/analytics/by-side` | Analysis by Long/Short side |
+| `GET` | `/api/analytics/by-tag` | Analysis by tag |
+| `GET` | `/api/analytics/by-playbook` | Analysis by playbook |
+| `GET` | `/api/analytics/by-mood` | Analysis by mood |
+| `GET` | `/api/analytics/streaks` | Win/loss streaks |
+| `GET` | `/api/analytics/risk` | Risk analysis |
 | `GET` | `/api/analytics/rolling` | Rolling analytics |
-| `GET` | `/api/journal` | Lấy journal entries |
-| `POST` | `/api/journal` | Tạo journal entry |
-| `GET` | `/api/playbooks` | Lấy danh sách playbooks |
-| `POST` | `/api/playbooks` | Tạo playbook |
-| `GET` | `/api/rules` | Lấy danh sách rules |
-| `POST` | `/api/rules` | Tạo rule |
-| `GET` | `/api/tags` | Lấy danh sách tags |
-| `POST` | `/api/tags` | Tạo tag |
+| `GET` | `/api/journal` | Get journal entries |
+| `POST` | `/api/journal` | Create a journal entry |
+| `GET` | `/api/playbooks` | Get list of playbooks |
+| `POST` | `/api/playbooks` | Create a playbook |
+| `GET` | `/api/rules` | Get list of rules |
+| `POST` | `/api/rules` | Create a rule |
+| `GET` | `/api/tags` | Get list of tags |
+| `POST` | `/api/tags` | Create a tag |
 
 ### User Service APIs
 
 | Method | Endpoint | Description |
 |:-------|:---------|:------------|
-| `GET` | `/api/v1/users/me` | Lấy profile user hiện tại |
-| `GET` | `/api/v1/admin/users` | Danh sách users (Admin) |
-| `PUT` | `/api/v1/admin/users/{id}` | Cập nhật user (Admin) |
-| `GET` | `/api/v1/admin/groups` | Danh sách groups |
-| `POST` | `/api/v1/admin/groups` | Tạo group mới |
-| `GET` | `/api/v1/admin/roles` | Danh sách roles |
-| `POST` | `/api/v1/admin/roles` | Tạo role mới |
-| `GET` | `/api/v1/admin/menus` | Danh sách menus |
-| `POST` | `/api/v1/admin/menus` | Tạo menu mới |
-| `GET` | `/api/v1/admin/audit-logs` | Danh sách audit logs |
-| `POST` | `/api/v1/billing/purchase-premium` | Mua gói Premium |
-| `POST` | `/api/internal/users/sync` | Đồng bộ user (Internal) |
+| `GET` | `/api/v1/users/me` | Get current user profile |
+| `GET` | `/api/v1/admin/users` | List users (Admin) |
+| `PUT` | `/api/v1/admin/users/{id}` | Update a user (Admin) |
+| `GET` | `/api/v1/admin/groups` | List groups |
+| `POST` | `/api/v1/admin/groups` | Create a new group |
+| `GET` | `/api/v1/admin/roles` | List roles |
+| `POST` | `/api/v1/admin/roles` | Create a new role |
+| `GET` | `/api/v1/admin/menus` | List menus |
+| `POST` | `/api/v1/admin/menus` | Create a new menu |
+| `GET` | `/api/v1/admin/audit-logs` | List audit logs |
+| `POST` | `/api/v1/billing/purchase-premium` | Purchase Premium subscription |
+| `POST` | `/api/internal/users/sync` | Sync users (Internal) |
 
 ---
 
