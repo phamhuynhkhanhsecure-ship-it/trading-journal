@@ -92,16 +92,19 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
         // Fix 3: single Redis call — user-service pre-builds flattened permission list on login/role change
         String permKey = "cache:user_permissions:" + email;
         return redisTemplate.opsForValue().get(permKey)
-                .map(json -> {
+                .flatMap(json -> {
                     try {
                         ApiLine[] permissions = objectMapper.readValue(json, ApiLine[].class);
-                        return java.util.Arrays.stream(permissions).anyMatch(p -> isMatch(p, path, method));
+                        boolean match = java.util.Arrays.stream(permissions).anyMatch(p -> isMatch(p, path, method));
+                        return Mono.just(match);
                     } catch (Exception e) {
                         log.error("Failed to parse permissions for user '{}': {}", email, e.getMessage());
-                        return false;
+                        return Mono.just(false);
                     }
                 })
-                .defaultIfEmpty(false)
+                // Fallback: permission cache not yet built (e.g. DB down, first login, Redis flush)
+                // Fall back to legacy N+1 chain so users are never permanently locked out
+                .switchIfEmpty(checkAccessLegacy(email, path, method))
                 .onErrorResume(e -> {
                     log.error("Redis error checking permissions for user '{}'", email, e);
                     return Mono.just(false);
@@ -121,6 +124,38 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
             method, path, apiLine.getAction(), apiLine.getPath(), methodMatch, pathMatch);
             
         return methodMatch && pathMatch;
+    }
+
+    /**
+     * Fallback: legacy N+1 Redis chain used when flat permission cache is not yet built.
+     * Keeps users from being permanently locked out during DB downtime or after Redis flush.
+     */
+    private Mono<Boolean> checkAccessLegacy(String email, String path, String method) {
+        log.debug("Permission cache miss for '{}', falling back to legacy chain for {} {}", email, method, path);
+        String userGroupsKey = "cache:user_groups:" + email;
+
+        return redisTemplate.opsForList().range(userGroupsKey, 0, -1)
+                .flatMap(groupId -> {
+                    String groupRolesKey = "cache:group_roles:" + groupId;
+                    return redisTemplate.opsForList().range(groupRolesKey, 0, -1)
+                            .onErrorResume(e -> reactor.core.publisher.Flux.empty());
+                })
+                .flatMap(roleId -> {
+                    String rolePermsKey = "cache:role_permissions:" + roleId;
+                    return redisTemplate.opsForHash().get(rolePermsKey, "api_lines")
+                            .onErrorResume(e -> Mono.empty());
+                })
+                .cast(String.class)
+                .flatMapIterable(apiLinesJson -> {
+                    try {
+                        ApiLine[] arr = objectMapper.readValue(apiLinesJson, ApiLine[].class);
+                        return java.util.Arrays.asList(arr);
+                    } catch (Exception e) {
+                        return java.util.Collections.emptyList();
+                    }
+                })
+                .any(apiLine -> isMatch(apiLine, path, method))
+                .defaultIfEmpty(false);
     }
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
