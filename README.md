@@ -8,6 +8,7 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 
 ## 📋 Table of Contents
 
+- [🤖 AI-Powered Capabilities](#-ai-powered-capabilities)
 - [Architecture Overview](#-architecture-overview)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
@@ -29,6 +30,16 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 - [Environment Variables](#-environment-variables)
 - [Deployment](#-deployment)
 - [Contributing](#-contributing)
+
+---
+
+## 🤖 AI-Powered Capabilities
+
+This project deeply integrates with **Google Gemini AI** to provide an intelligent edge for traders:
+
+- 🧠 **AI Trading Coach**: Analyzes your last 100 trades to calculate win rate, identify strengths/weaknesses, and provide personalized, actionable trading advice.
+- 💬 **Context-Aware AI Chat**: A conversational assistant that understands your trading history and current portfolio. Supports multiple languages (Tiếng Việt, English, 中文).
+- 👁 **AI Vision for Charts**: Upload a screenshot of your TradingView chart, and the AI will automatically extract key data points (Instrument, Side, Entry Price, Stop Loss, Take Profit) to auto-fill your trade journal.
 
 ---
 
