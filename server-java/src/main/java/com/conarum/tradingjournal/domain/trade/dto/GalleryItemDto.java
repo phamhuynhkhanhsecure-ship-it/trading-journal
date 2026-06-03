@@ -9,7 +9,7 @@ import lombok.Setter;
 @Builder
 public class GalleryItemDto {
     private String tradeId;
-    private String date;
+    private String tradeDate;
     private String instrument;
     private java.math.BigDecimal pnl;
     private String imageId;

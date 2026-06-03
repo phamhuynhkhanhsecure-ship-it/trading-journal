@@ -238,7 +238,7 @@ public class TradeServiceImpl implements TradeService {
                 for (Trade.TradeImage img : t.getImages()) {
                     com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto dto = com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto.builder()
                         .tradeId(t.getId())
-                        .date(t.getDate())
+                        .tradeDate(t.getDate())
                         .instrument(t.getInstrument())
                         .pnl(t.getPnl())
                         .imageId(img.getId())
