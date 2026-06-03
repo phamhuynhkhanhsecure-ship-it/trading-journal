@@ -88,39 +88,24 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
                 return Mono.just(true);
             }
         }
-        
-        String userGroupsKey = "cache:user_groups:" + email;
-        
-        return redisTemplate.opsForList().range(userGroupsKey, 0, -1)
-                .flatMap(groupId -> {
-                    String groupRolesKey = "cache:group_roles:" + groupId;
-                    return redisTemplate.opsForList().range(groupRolesKey, 0, -1)
-                            .onErrorResume(e -> {
-                                log.error("Redis error fetching group roles for {}", groupId, e);
-                                return reactor.core.publisher.Flux.empty();
-                            });
-                })
-                .flatMap(roleId -> {
-                    String rolePermsKey = "cache:role_permissions:" + roleId;
-                    return redisTemplate.opsForHash().get(rolePermsKey, "api_lines")
-                            .onErrorResume(e -> {
-                                log.error("Redis error fetching role permissions for {}", roleId, e);
-                                return Mono.empty();
-                            });
-                })
-                .cast(String.class)
-                .flatMapIterable(apiLinesJson -> {
+
+        // Fix 3: single Redis call — user-service pre-builds flattened permission list on login/role change
+        String permKey = "cache:user_permissions:" + email;
+        return redisTemplate.opsForValue().get(permKey)
+                .map(json -> {
                     try {
-                        ApiLine[] arr = objectMapper.readValue(apiLinesJson, ApiLine[].class);
-                        return java.util.Arrays.asList(arr);
+                        ApiLine[] permissions = objectMapper.readValue(json, ApiLine[].class);
+                        return java.util.Arrays.stream(permissions).anyMatch(p -> isMatch(p, path, method));
                     } catch (Exception e) {
-                        log.error("Failed to parse ApiLine JSON", e);
-                        return java.util.Collections.emptyList();
+                        log.error("Failed to parse permissions for user '{}': {}", email, e.getMessage());
+                        return false;
                     }
                 })
-                .any(apiLine -> isMatch(apiLine, path, method))
-                // Default to false if nothing matches or if Redis is empty
-                .defaultIfEmpty(false);
+                .defaultIfEmpty(false)
+                .onErrorResume(e -> {
+                    log.error("Redis error checking permissions for user '{}'", email, e);
+                    return Mono.just(false);
+                });
     }
 
     private boolean isMatch(ApiLine apiLine, String path, String method) {

@@ -16,7 +16,9 @@ import com.conarum.tradingjournal.domain.trade.model.TradeOutboxEvent;
 import com.conarum.tradingjournal.domain.trade.repository.TradeOutboxEventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TradeServiceImpl implements TradeService {
 
     private final TradeRepository tradeRepository;
@@ -50,6 +53,7 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
+    @Transactional // Fix 1: atomic — if outbox save fails, trade save also rolls back
     public TradeResponseDto createTrade(TradeRequestDto request, String userEmail) {
         Trade trade = tradeMapper.toEntity(request);
         trade.setUserEmail(userEmail);
@@ -192,7 +196,8 @@ public class TradeServiceImpl implements TradeService {
                 
                 trade.getImages().add(img);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Failed to upload file '{}' to Google Drive for trade '{}'",
+                        file.getOriginalFilename(), tradeId, e);
                 throw new RuntimeException("Upload to Google Drive failed", e);
             }
         }
@@ -212,10 +217,9 @@ public class TradeServiceImpl implements TradeService {
                 if (imgToRemove.getDriveFileId() != null) {
                     googleDriveService.deleteFile(imgToRemove.getDriveFileId());
                 } else {
-                    java.io.File file = new java.io.File("../data/uploads", imgToRemove.getFilename());
-                    if (file.exists()) {
-                        file.delete();
-                    }
+                    // Fix 5: removed legacy local file.delete() — all images use Google Drive
+                    log.warn("Image '{}' on trade '{}' has no driveFileId, skipping delete",
+                            imageId, tradeId);
                 }
                 trade.getImages().remove(imgToRemove);
                 tradeRepository.save(trade);

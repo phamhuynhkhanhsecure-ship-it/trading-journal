@@ -23,7 +23,12 @@ public class OutboxEvent {
     private String aggregateId;
     private String eventType;
     private String payload; // JSON representation of the event
-    private String status; // PENDING, COMPLETED, FAILED
+    private String status; // PENDING, COMPLETED, DEAD_LETTER
     private Instant createdAt;
     private Instant processedAt;
+
+    // Fix 2: retry tracking
+    @Builder.Default
+    private int retryCount = 0;
+    private Instant lastRetriedAt;
 }

@@ -8,8 +8,10 @@ import com.conarum.userservice.domain.group.repository.GroupRepository;
 import com.conarum.userservice.domain.menu.mapper.MenuMapper;
 import com.conarum.userservice.domain.menu.model.Menu;
 import com.conarum.userservice.domain.menu.repository.MenuRepository;
+import com.conarum.userservice.domain.role.model.ApiLine;
 import com.conarum.userservice.domain.role.model.Permission;
 import com.conarum.userservice.domain.role.model.Role;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.conarum.userservice.domain.role.repository.RoleRepository;
 import com.conarum.userservice.domain.user.dto.UserDto;
 import com.conarum.userservice.domain.user.dto.UserProfileDto;
@@ -18,6 +20,7 @@ import com.conarum.userservice.domain.user.mapper.UserMapper;
 import com.conarum.userservice.domain.user.model.User;
 import com.conarum.userservice.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
     private final MenuMapper menuMapper;
     private final StringRedisTemplate redisTemplate;
     private final KafkaAuditProducerService auditProducerService;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.security.super-admins:}")
     private String superAdmins;
@@ -78,8 +83,11 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForList().rightPushAll(cacheKey, groupIds);
             redisTemplate.expire(cacheKey, Duration.ofHours(24));
         }
-        
-        List<String> groupNames = groupIds != null && !groupIds.isEmpty() ? 
+
+        // Fix 3: rebuild flattened permission cache (1 Redis call in Gateway)
+        rebuildUserPermissionCache(email, groupIds != null ? groupIds : List.of());
+
+        List<String> groupNames = groupIds != null && !groupIds.isEmpty() ?
                 groupRepository.findAllById(groupIds).stream().map(Group::getName).toList() : 
                 Collections.emptyList();
                 
@@ -150,6 +158,9 @@ public class UserServiceImpl implements UserService {
             redisTemplate.expire(cacheKey, Duration.ofHours(24));
         }
 
+        // Fix 3: rebuild flattened permission cache (1 Redis call in Gateway)
+        rebuildUserPermissionCache(request.email(), user.getGroupIds() != null ? user.getGroupIds() : List.of());
+
         return new ArrayList<>(roleIds);
     }
 
@@ -218,5 +229,42 @@ public class UserServiceImpl implements UserService {
         profile.setMenus(menuMapper.toDtoList(menus));
 
         return profile;
+    }
+
+    /**
+     * Fix 3: Build a flat list of all ApiLines for a user and cache it under
+     * "cache:user_permissions:{email}" so the API Gateway only needs 1 Redis call
+     * per request instead of N+1 (user_groups → group_roles → role_permissions).
+     */
+    private void rebuildUserPermissionCache(String email, List<String> groupIds) {
+        try {
+            List<ApiLine> allApiLines = new ArrayList<>();
+
+            if (groupIds != null && !groupIds.isEmpty()) {
+                List<Group> groups = (List<Group>) groupRepository.findAllById(groupIds);
+                for (Group group : groups) {
+                    if (group.getRoleIds() == null) continue;
+                    List<Role> roles = (List<Role>) roleRepository.findAllById(group.getRoleIds());
+                    for (Role role : roles) {
+                        if (role.getPermissions() == null) continue;
+                        for (Permission perm : role.getPermissions()) {
+                            if (perm.getApiLines() != null) {
+                                allApiLines.addAll(perm.getApiLines());
+                            }
+                        }
+                    }
+                }
+            }
+
+            String permKey = "cache:user_permissions:" + email;
+            redisTemplate.opsForValue().set(
+                    permKey,
+                    objectMapper.writeValueAsString(allApiLines),
+                    Duration.ofHours(24)
+            );
+            log.debug("Rebuilt permission cache for user '{}': {} api lines", email, allApiLines.size());
+        } catch (Exception e) {
+            log.error("Failed to rebuild permission cache for user '{}'", email, e);
+        }
     }
 }
