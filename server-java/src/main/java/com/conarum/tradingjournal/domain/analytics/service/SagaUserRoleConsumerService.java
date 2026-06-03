@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class SagaUserRoleConsumerService {
 
     private final ObjectMapper objectMapper;
+    private final com.conarum.tradingjournal.domain.analytics.repository.AnalyticsConfigRepository analyticsConfigRepository;
 
     @KafkaListener(topics = "user-events", groupId = "${spring.kafka.consumer.group-id:server-java-group}")
     public void consumeUserEvent(String message) {
@@ -24,8 +25,10 @@ public class SagaUserRoleConsumerService {
                 // Mocking unlocking Premium features
                 log.info(">>> SAGA COMPLETE: Unlocking Premium Analytics features for user {} <<<", event.getUserEmail());
                 
-                // Here we would typically update a local 'UserSubscription' or 'AnalyticsConfig' collection
-                // to grant access to advanced charts, AI reports, etc.
+                com.conarum.tradingjournal.domain.analytics.model.AnalyticsConfig config = analyticsConfigRepository.findByUserEmail(event.getUserEmail())
+                        .orElse(com.conarum.tradingjournal.domain.analytics.model.AnalyticsConfig.builder().userEmail(event.getUserEmail()).build());
+                config.setPremium(true);
+                analyticsConfigRepository.save(config);
             }
         } catch (Exception e) {
             log.error("Error processing user event message: {}", e.getMessage(), e);

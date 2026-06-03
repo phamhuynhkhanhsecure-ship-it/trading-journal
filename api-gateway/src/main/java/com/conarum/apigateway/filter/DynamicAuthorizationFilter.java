@@ -94,11 +94,19 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
         return redisTemplate.opsForList().range(userGroupsKey, 0, -1)
                 .flatMap(groupId -> {
                     String groupRolesKey = "cache:group_roles:" + groupId;
-                    return redisTemplate.opsForList().range(groupRolesKey, 0, -1);
+                    return redisTemplate.opsForList().range(groupRolesKey, 0, -1)
+                            .onErrorResume(e -> {
+                                log.error("Redis error fetching group roles for {}", groupId, e);
+                                return reactor.core.publisher.Flux.empty();
+                            });
                 })
                 .flatMap(roleId -> {
                     String rolePermsKey = "cache:role_permissions:" + roleId;
-                    return redisTemplate.opsForHash().get(rolePermsKey, "api_lines");
+                    return redisTemplate.opsForHash().get(rolePermsKey, "api_lines")
+                            .onErrorResume(e -> {
+                                log.error("Redis error fetching role permissions for {}", roleId, e);
+                                return Mono.empty();
+                            });
                 })
                 .cast(String.class)
                 .flatMapIterable(apiLinesJson -> {

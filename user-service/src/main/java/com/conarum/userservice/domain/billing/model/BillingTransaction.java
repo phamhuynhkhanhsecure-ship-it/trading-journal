@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
@@ -21,7 +22,7 @@ public class BillingTransaction {
     private String id;
     private String userEmail;
     private String packageId;
-    private Double amount;
+    private BigDecimal amount;
     private String status; // SUCCESS, FAILED
     private Instant createdAt;
 }

@@ -34,7 +34,7 @@ public class BillingServiceImpl implements BillingService {
         BillingTransaction transaction = BillingTransaction.builder()
                 .userEmail(userEmail)
                 .packageId("PREMIUM_ANALYTICS")
-                .amount(19.99)
+                .amount(java.math.BigDecimal.valueOf(19.99))
                 .status("SUCCESS")
                 .createdAt(Instant.now())
                 .build();

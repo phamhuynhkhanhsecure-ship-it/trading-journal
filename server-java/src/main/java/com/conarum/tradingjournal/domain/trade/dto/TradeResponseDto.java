@@ -5,6 +5,7 @@ import com.conarum.tradingjournal.domain.trade.model.Trade.TradeRuleEntry;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -14,17 +15,17 @@ public class TradeResponseDto {
     private String date;
     private String instrument;
     private String side;
-    private double entryPrice;
-    private double exitPrice;
-    private double quantity;
-    private double pnl;
-    private double fees;
+    private BigDecimal entryPrice;
+    private BigDecimal exitPrice;
+    private BigDecimal quantity;
+    private BigDecimal pnl;
+    private BigDecimal fees;
     private String notes;
     private List<String> tags;
     private List<TradeImage> images;
     private List<TradeRuleEntry> ruleChecklist;
-    private double stopLoss;
-    private double takeProfit;
+    private BigDecimal stopLoss;
+    private BigDecimal takeProfit;
     private int rating;
     private int disciplineScore;
     

@@ -37,7 +37,7 @@ public class TradeOutboxScheduler {
         for (TradeOutboxEvent event : pendingEvents) {
             try {
                 // Send to Kafka raw JSON string as configured in KafkaTemplate (StringSerializer)
-                kafkaTemplate.send(event.getTopic(), event.getAggregateId(), event.getPayload()).get(); // .get() for synchronous block to ensure it's sent
+                kafkaTemplate.send(event.getTopic(), event.getAggregateId(), event.getPayload()).get(5, java.util.concurrent.TimeUnit.SECONDS); // Timeout rõ ràng
                 
                 // Mark as completed
                 event.setStatus("COMPLETED");

@@ -31,8 +31,8 @@ public class TradeController {
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
-            @RequestParam(required = false) Double pnlMin,
-            @RequestParam(required = false) Double pnlMax,
+            @RequestParam(required = false) java.math.BigDecimal pnlMin,
+            @RequestParam(required = false) java.math.BigDecimal pnlMax,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String playbookId,
             @RequestParam(required = false) Integer rating) {
@@ -112,9 +112,9 @@ public class TradeController {
     }
 
     @GetMapping("/gallery/all")
-    public ResponseEntity<ApiResponse<List<Object>>> getGallery() {
+    public ResponseEntity<ApiResponse<List<com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto>>> getGallery() {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<Object> gallery = tradeService.getGallery(userEmail);
+        List<com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto> gallery = tradeService.getGallery(userEmail);
         return ResponseEntity.ok(ApiResponse.success(gallery));
     }
 }

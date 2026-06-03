@@ -225,27 +225,25 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public List<Object> getGallery(String userEmail) {
+    public List<com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto> getGallery(String userEmail) {
         List<Trade> trades = tradeRepository.findByUserEmailOrderByDateDesc(userEmail);
-        List<Object> gallery = new ArrayList<>();
+        List<com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto> gallery = new ArrayList<>();
         
         for (Trade t : trades) {
             if (t.getImages() != null) {
                 for (Trade.TradeImage img : t.getImages()) {
-                    java.util.Map<String, Object> map = new java.util.HashMap<>();
-                    map.put("id", img.getId());
-                    map.put("tradeId", t.getId());
-                    map.put("instrument", t.getInstrument());
-                    map.put("tradeDate", t.getDate());
-                    map.put("side", t.getSide());
-                    map.put("pnl", t.getPnl());
-                    map.put("filename", img.getFilename());
-                    map.put("originalName", img.getOriginalName());
-                    map.put("mimeType", img.getMimeType());
-                    map.put("caption", img.getCaption() != null ? img.getCaption() : "");
-                    map.put("createdAt", img.getCreatedAt());
-                    map.put("driveFileId", img.getDriveFileId() != null ? img.getDriveFileId() : "");
-                    gallery.add(map);
+                    com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto dto = com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto.builder()
+                        .tradeId(t.getId())
+                        .date(t.getDate())
+                        .instrument(t.getInstrument())
+                        .pnl(t.getPnl())
+                        .imageId(img.getId())
+                        .filename(img.getFilename())
+                        .caption(img.getCaption() != null ? img.getCaption() : "")
+                        .mimeType(img.getMimeType())
+                        .driveFileId(img.getDriveFileId() != null ? img.getDriveFileId() : "")
+                        .build();
+                    gallery.add(dto);
                 }
             }
         }

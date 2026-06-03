@@ -18,5 +18,5 @@ public interface TradeService {
     // Image handling
     List<TradeResponseDto> uploadImages(String tradeId, List<MultipartFile> files, String userEmail);
     TradeResponseDto deleteImage(String tradeId, String imageId, String userEmail);
-    List<Object> getGallery(String userEmail);
+    List<com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto> getGallery(String userEmail);
 }

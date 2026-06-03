@@ -38,7 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       // In a real app, you should use an environment variable for the Gateway URL.
       // Assuming API Gateway runs on 8000
-      const response = await fetch('http://localhost:8000/api/v1/users/me', {
+      const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api';
+      const response = await fetch(`${BASE_URL}/v1/users/me`, {
         headers: {
           'Authorization': `Bearer ${authToken}`
         }

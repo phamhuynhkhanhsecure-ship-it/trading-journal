@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +22,17 @@ public class TradeRequestDto {
     @NotBlank(message = "Side is required")
     private String side; // LONG, SHORT
     
-    private double entryPrice = 0;
-    private double exitPrice = 0;
-    private double quantity = 0;
-    private double pnl = 0;
-    private double fees = 0;
+    private BigDecimal entryPrice = BigDecimal.ZERO;
+    private BigDecimal exitPrice = BigDecimal.ZERO;
+    private BigDecimal quantity = BigDecimal.ZERO;
+    private BigDecimal pnl = BigDecimal.ZERO;
+    private BigDecimal fees = BigDecimal.ZERO;
     private String notes = "";
     private List<String> tags = new ArrayList<>();
     private List<TradeImage> images = new ArrayList<>();
     private List<TradeRuleEntry> ruleChecklist = new ArrayList<>();
-    private double stopLoss = 0;
-    private double takeProfit = 0;
+    private BigDecimal stopLoss = BigDecimal.ZERO;
+    private BigDecimal takeProfit = BigDecimal.ZERO;
     private int rating = 0;
     private int disciplineScore = 0;
     

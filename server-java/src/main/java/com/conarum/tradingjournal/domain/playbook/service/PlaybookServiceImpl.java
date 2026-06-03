@@ -25,8 +25,8 @@ public class PlaybookServiceImpl implements PlaybookService {
     private PlaybookResponseDto enrichWithStats(PlaybookResponseDto dto, String userEmail) {
         List<Trade> trades = tradeRepository.findByPlaybookIdAndUserEmail(dto.getId(), userEmail);
         int total = trades.size();
-        int wins = (int) trades.stream().filter(t -> t.getPnl() > 0).count();
-        double totalPnl = trades.stream().mapToDouble(Trade::getPnl).sum();
+        int wins = (int) trades.stream().filter(t -> t.getPnl().compareTo(java.math.BigDecimal.ZERO) > 0).count();
+        double totalPnl = trades.stream().mapToDouble(t -> t.getPnl().doubleValue()).sum();
         
         dto.setTradeCount(total);
         dto.setWinCount(wins);

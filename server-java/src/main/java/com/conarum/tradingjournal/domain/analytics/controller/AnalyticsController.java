@@ -4,7 +4,10 @@ import com.conarum.tradingjournal.common.dto.ApiResponse;
 import com.conarum.tradingjournal.config.SecurityUtils;
 import com.conarum.tradingjournal.domain.analytics.dto.AnalyticsResponseDto.*;
 import com.conarum.tradingjournal.domain.analytics.dto.DateRangeFilterDto;
-import com.conarum.tradingjournal.domain.analytics.service.AnalyticsService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsOverviewService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsPerformanceService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsRiskService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsMoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +26,10 @@ import java.util.Map;
 @Slf4j
 public class AnalyticsController {
 
-    private final AnalyticsService analyticsService;
+    private final AnalyticsOverviewService overviewService;
+    private final AnalyticsPerformanceService performanceService;
+    private final AnalyticsRiskService riskService;
+    private final AnalyticsMoodService moodService;
 
     private DateRangeFilterDto createFilter(String dateFrom, String dateTo) {
         DateRangeFilterDto filter = new DateRangeFilterDto();
@@ -38,7 +44,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateTo) {
         log.info("RECEIVED REQUEST: /api/analytics/overview from={}, to={}", dateFrom, dateTo);
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        Overview data = analyticsService.getOverview(userEmail, createFilter(dateFrom, dateTo));
+        Overview data = overviewService.getOverview(userEmail, createFilter(dateFrom, dateTo));
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 
@@ -47,7 +53,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<ByCategory> data = analyticsService.getByDayOfWeek(userEmail, createFilter(dateFrom, dateTo));
+        List<ByCategory> data = performanceService.getByDayOfWeek(userEmail, createFilter(dateFrom, dateTo));
         List<Map<String, Object>> mapped = data.stream().map(d -> {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("day", d.getCategory());
@@ -66,7 +72,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<ByCategory> data = analyticsService.getByInstrument(userEmail, createFilter(dateFrom, dateTo));
+        List<ByCategory> data = performanceService.getByInstrument(userEmail, createFilter(dateFrom, dateTo));
         List<Map<String, Object>> mapped = data.stream().map(d -> {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("instrument", d.getCategory());
@@ -84,7 +90,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<ByCategory> data = analyticsService.getBySide(userEmail, createFilter(dateFrom, dateTo));
+        List<ByCategory> data = performanceService.getBySide(userEmail, createFilter(dateFrom, dateTo));
         List<Map<String, Object>> mapped = data.stream().map(d -> {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("side", d.getCategory());
@@ -102,7 +108,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<ByCategory> data = analyticsService.getByTag(userEmail, createFilter(dateFrom, dateTo));
+        List<ByCategory> data = performanceService.getByTag(userEmail, createFilter(dateFrom, dateTo));
         List<Map<String, Object>> mapped = data.stream().map(d -> {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("tag", d.getCategory());
@@ -120,7 +126,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<ByCategory> data = analyticsService.getByPlaybook(userEmail, createFilter(dateFrom, dateTo));
+        List<ByCategory> data = performanceService.getByPlaybook(userEmail, createFilter(dateFrom, dateTo));
         List<Map<String, Object>> mapped = data.stream().map(d -> {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("playbookId", d.getCategory());
@@ -140,7 +146,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        Streaks data = analyticsService.getStreaks(userEmail, createFilter(dateFrom, dateTo));
+        Streaks data = performanceService.getStreaks(userEmail, createFilter(dateFrom, dateTo));
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 
@@ -149,7 +155,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        Risk data = analyticsService.getRisk(userEmail, createFilter(dateFrom, dateTo));
+        Risk data = riskService.getRisk(userEmail, createFilter(dateFrom, dateTo));
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 
@@ -158,7 +164,7 @@ public class AnalyticsController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<Mood> data = analyticsService.getByMood(userEmail, createFilter(dateFrom, dateTo));
+        List<Mood> data = moodService.getByMood(userEmail, createFilter(dateFrom, dateTo));
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 
@@ -166,7 +172,7 @@ public class AnalyticsController {
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getRolling(
             @RequestParam(defaultValue = "10") int window) {
         String userEmail = SecurityUtils.getCurrentUserEmail();
-        List<Map<String, Object>> data = analyticsService.getRolling(userEmail, window);
+        List<Map<String, Object>> data = performanceService.getRolling(userEmail, window);
         return ResponseEntity.ok(ApiResponse.success(data));
     }
 }

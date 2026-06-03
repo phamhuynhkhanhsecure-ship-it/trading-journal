@@ -2,7 +2,8 @@ package com.conarum.tradingjournal.domain.export.service;
 
 import com.conarum.tradingjournal.domain.analytics.dto.AnalyticsResponseDto.*;
 import com.conarum.tradingjournal.domain.analytics.dto.DateRangeFilterDto;
-import com.conarum.tradingjournal.domain.analytics.service.AnalyticsService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsOverviewService;
+import com.conarum.tradingjournal.domain.analytics.service.AnalyticsPerformanceService;
 import com.conarum.tradingjournal.domain.trade.model.Trade;
 import com.conarum.tradingjournal.domain.trade.repository.TradeRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExportServiceImpl implements ExportService {
 
-    private final AnalyticsService analyticsService;
+    private final AnalyticsOverviewService overviewService;
+    private final AnalyticsPerformanceService performanceService;
     private final TradeRepository tradeRepository;
 
     @Override
@@ -25,10 +27,10 @@ public class ExportServiceImpl implements ExportService {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             
             // Gather Data
-            Overview overview = analyticsService.getOverview(userEmail, filter);
+            Overview overview = overviewService.getOverview(userEmail, filter);
             List<Trade> trades = getTrades(userEmail, filter);
-            List<ByCategory> byDayOfWeek = analyticsService.getByDayOfWeek(userEmail, filter);
-            List<ByCategory> byInstrument = analyticsService.getByInstrument(userEmail, filter);
+            List<ByCategory> byDayOfWeek = performanceService.getByDayOfWeek(userEmail, filter);
+            List<ByCategory> byInstrument = performanceService.getByInstrument(userEmail, filter);
 
             // Create Sheets
             createOverviewSheet(workbook, overview);
@@ -102,14 +104,14 @@ public class ExportServiceImpl implements ExportService {
             row.createCell(0).setCellValue(t.getDate());
             row.createCell(1).setCellValue(t.getInstrument());
             row.createCell(2).setCellValue(t.getSide());
-            row.createCell(3).setCellValue(t.getEntryPrice());
-            row.createCell(4).setCellValue(t.getExitPrice());
-            row.createCell(5).setCellValue(t.getQuantity());
-            row.createCell(6).setCellValue(t.getStopLoss());
-            row.createCell(7).setCellValue(t.getTakeProfit());
-            row.createCell(8).setCellValue(t.getPnl());
-            row.createCell(9).setCellValue(t.getFees());
-            row.createCell(10).setCellValue(t.getPnl() - t.getFees());
+            row.createCell(3).setCellValue(t.getEntryPrice().doubleValue());
+            row.createCell(4).setCellValue(t.getExitPrice().doubleValue());
+            row.createCell(5).setCellValue(t.getQuantity().doubleValue());
+            row.createCell(6).setCellValue(t.getStopLoss().doubleValue());
+            row.createCell(7).setCellValue(t.getTakeProfit().doubleValue());
+            row.createCell(8).setCellValue(t.getPnl().doubleValue());
+            row.createCell(9).setCellValue(t.getFees().doubleValue());
+            row.createCell(10).setCellValue(t.getPnl().subtract(t.getFees()).doubleValue());
             row.createCell(11).setCellValue(t.getTags() != null ? String.join(", ", t.getTags()) : "");
             row.createCell(12).setCellValue(t.getPlaybookId() != null ? t.getPlaybookId() : "");
             row.createCell(13).setCellValue(t.getRating());
@@ -138,9 +140,9 @@ public class ExportServiceImpl implements ExportService {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(item.getCategory());
             row.createCell(1).setCellValue(item.getTrades());
-            row.createCell(2).setCellValue(item.getPnl());
-            row.createCell(3).setCellValue(item.getWinRate());
-            row.createCell(4).setCellValue(item.getAvgPnl());
+            row.createCell(2).setCellValue(item.getPnl() != null ? item.getPnl().doubleValue() : 0);
+            row.createCell(3).setCellValue(item.getWinRate() != null ? item.getWinRate().doubleValue() : 0);
+            row.createCell(4).setCellValue(item.getAvgPnl() != null ? item.getAvgPnl().doubleValue() : 0);
         }
         
         for (int i = 0; i < headers.length; i++) {

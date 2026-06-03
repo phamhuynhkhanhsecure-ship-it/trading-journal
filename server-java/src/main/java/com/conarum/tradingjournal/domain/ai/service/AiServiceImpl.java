@@ -57,14 +57,14 @@ public class AiServiceImpl implements AiService {
             return "Bạn chưa có giao dịch nào để AI phân tích.";
         }
 
-        long wins = sorted.stream().filter(t -> t.getPnl() - t.getFees() > 0).count();
+        long wins = sorted.stream().filter(t -> t.getPnl().subtract(t.getFees() != null ? t.getFees() : java.math.BigDecimal.ZERO).compareTo(java.math.BigDecimal.ZERO) > 0).count();
         double winrate = (double) wins / sorted.size() * 100;
         
         List<Map<String, Object>> tradeData = sorted.stream().map(t -> Map.<String, Object>of(
             "date", t.getDate(),
             "instrument", t.getInstrument(),
             "side", t.getSide(),
-            "pnl", t.getPnl() - t.getFees(),
+            "pnl", t.getPnl().subtract(t.getFees() != null ? t.getFees() : java.math.BigDecimal.ZERO),
             "tags", t.getTags() != null ? t.getTags() : new ArrayList<>()
         )).collect(Collectors.toList());
 
@@ -136,7 +136,7 @@ public class AiServiceImpl implements AiService {
         String systemInstruction = "Bạn là trợ lý AI Trading (Gemini) của ứng dụng Trading Journal. Hãy trò chuyện tự nhiên, ngắn gọn và hữu ích. Dưới đây là bối cảnh giao dịch gần nhất của người dùng này:\n";
         
         if (!sorted.isEmpty()) {
-            long wins = sorted.stream().filter(t -> t.getPnl() - t.getFees() > 0).count();
+            long wins = sorted.stream().filter(t -> t.getPnl().subtract(t.getFees() != null ? t.getFees() : java.math.BigDecimal.ZERO).compareTo(java.math.BigDecimal.ZERO) > 0).count();
             double winrate = (double) wins / sorted.size() * 100;
             
             systemInstruction += "- Tổng số lệnh gần đây: " + sorted.size() + "\n";
@@ -146,7 +146,7 @@ public class AiServiceImpl implements AiService {
                 "date", t.getDate(),
                 "instrument", t.getInstrument(),
                 "side", t.getSide(),
-                "pnl", t.getPnl() - t.getFees(),
+                "pnl", t.getPnl().subtract(t.getFees() != null ? t.getFees() : java.math.BigDecimal.ZERO),
                 "tags", t.getTags() != null ? t.getTags() : new ArrayList<>()
             )).collect(Collectors.toList());
             

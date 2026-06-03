@@ -39,7 +39,7 @@ public class OutboxScheduler {
                 JsonNode payloadNode = objectMapper.readTree(event.getPayload());
                 
                 // Send to Kafka
-                kafkaTemplate.send(event.getTopic(), event.getAggregateId(), payloadNode).get(); // .get() for synchronous block to ensure it's sent
+                kafkaTemplate.send(event.getTopic(), event.getAggregateId(), payloadNode).get(5, java.util.concurrent.TimeUnit.SECONDS); // Timeout rõ ràng
                 
                 // Mark as completed
                 event.setStatus("COMPLETED");
