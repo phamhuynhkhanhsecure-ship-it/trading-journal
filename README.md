@@ -44,7 +44,7 @@ Built with **Spring Boot 3**, **React 19**, **MongoDB**, **Redis**, **Kafka**, a
 <!-- 📸 THAY ẢNH SHOWCASE TẠI ĐÂY: Điền đường dẫn các ảnh vào thẻ src tương ứng -->
 | Trading Dashboard (Recharts) | AI Trading Coach (Gemini) |
 |:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/684a45e8-3e88-4e1c-a75a-b53a85009ef4" alt="Trading Dashboard Overview" width="400"/> | <img src="https://github.com/user-attachments/assets/8e2c0935-0bab-41ee-b61d-bcf79fda0b59" width="400"/> |
+| <img src="https://github.com/user-attachments/assets/684a45e8-3e88-4e1c-a75a-b53a85009ef4" alt="Trading Dashboard Overview" width="400"/> | <img src="https://github.com/user-attachments/assets/59ab2bc0-0127-4efd-b749-a5dcb648dd39" width="400"/> |
 | **Trade Entry Calculator** | **Performance Heatmap** |
 | <img src="https://github.com/user-attachments/assets/be9f3058-9df0-4ffd-b001-a739d3d5a3ad" width="400"/> | <img src="https://github.com/user-attachments/assets/5ba94ff1-bc45-44d0-bd62-bf9c78996c56" width="400"/> |
 
