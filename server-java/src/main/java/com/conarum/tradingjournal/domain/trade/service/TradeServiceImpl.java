@@ -237,12 +237,14 @@ public class TradeServiceImpl implements TradeService {
             if (t.getImages() != null) {
                 for (Trade.TradeImage img : t.getImages()) {
                     com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto dto = com.conarum.tradingjournal.domain.trade.dto.GalleryItemDto.builder()
+                        .id(img.getId())
                         .tradeId(t.getId())
                         .tradeDate(t.getDate())
                         .instrument(t.getInstrument())
+                        .side(t.getSide())
                         .pnl(t.getPnl())
-                        .imageId(img.getId())
                         .filename(img.getFilename())
+                        .originalName(img.getOriginalName())
                         .caption(img.getCaption() != null ? img.getCaption() : "")
                         .mimeType(img.getMimeType())
                         .driveFileId(img.getDriveFileId() != null ? img.getDriveFileId() : "")

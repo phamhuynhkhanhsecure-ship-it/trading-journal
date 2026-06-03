@@ -8,12 +8,14 @@ import lombok.Setter;
 @Setter
 @Builder
 public class GalleryItemDto {
+    private String id;           // imageId — matches TradeImage.id on FE
     private String tradeId;
     private String tradeDate;
     private String instrument;
+    private String side;
     private java.math.BigDecimal pnl;
-    private String imageId;
     private String filename;
+    private String originalName;
     private String caption;
     private String mimeType;
     private String driveFileId;
