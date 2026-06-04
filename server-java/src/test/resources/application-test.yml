@@ -1,0 +1,56 @@
+spring:
+  config:
+    import: ""   # Disable Config Server import in tests
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      # Empty URI → flapdoodle auto-configures embedded MongoDB
+      uri: ""
+      auto-index-creation: true
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      group-id: test-group
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ""   # Disable JWT auto-config in service-layer tests
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+# Disable MongoTransactionManager — embedded MongoDB is standalone (no replica set)
+app:
+  mongo:
+    transactions:
+      enabled: false
+  security:
+    super-admins: superadmin@test.com
+  outbox:
+    poll-interval: 300   # Faster polling in tests
+
+# Stub external API keys
+gemini:
+  api:
+    key: test-key-stub
+
+google:
+  drive:
+    client-id: test
+    client-secret: test
+    refresh-token: test
+    folder-id: test-folder
+
+logging:
+  level:
+    com.conarum.tradingjournal: WARN   # Quieter output in tests

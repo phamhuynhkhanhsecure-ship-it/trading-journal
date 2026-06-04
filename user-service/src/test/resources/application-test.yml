@@ -1,0 +1,45 @@
+spring:
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+  data:
+    mongodb:
+      uri: ""
+      auto-index-creation: true
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      group-id: test-group
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ""
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+app:
+  mongo:
+    transactions:
+      enabled: false
+  security:
+    super-admins: superadmin@test.com
+  outbox:
+    poll-interval: 300
+
+logging:
+  level:
+    com.conarum.userservice: WARN
