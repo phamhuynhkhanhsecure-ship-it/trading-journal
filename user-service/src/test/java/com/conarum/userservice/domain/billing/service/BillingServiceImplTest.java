@@ -5,6 +5,7 @@ import com.conarum.userservice.domain.billing.dto.BillingTransactionResponseDto;
 import com.conarum.userservice.domain.billing.mapper.BillingMapper;
 import com.conarum.userservice.domain.billing.model.BillingTransaction;
 import com.conarum.userservice.domain.billing.repository.BillingTransactionRepository;
+import com.conarum.userservice.infrastructure.metrics.UserServiceMetrics;
 import com.conarum.userservice.infrastructure.outbox.OutboxEventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ class BillingServiceImplTest {
     @Mock private BillingTransactionRepository billingTransactionRepository;
     @Mock private OutboxEventRepository outboxEventRepository;
     @Mock private BillingMapper billingMapper;
+    @Mock private UserServiceMetrics userServiceMetrics;
 
     @InjectMocks private BillingServiceImpl billingService;
 

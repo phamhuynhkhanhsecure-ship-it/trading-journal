@@ -72,6 +72,10 @@ class OutboxSchedulerIntegrationTest {
         // Consume from Kafka
         Map<String, Object> props = KafkaTestUtils.consumerProps(
                 "test-billing-consumer", "true", embeddedKafkaBroker);
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
         try (org.apache.kafka.clients.consumer.Consumer<String, String> consumer =
                      new org.springframework.kafka.core.DefaultKafkaConsumerFactory<String, String>(props).createConsumer()) {
             embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, "billing-events");
@@ -105,6 +109,10 @@ class OutboxSchedulerIntegrationTest {
 
         Map<String, Object> props = KafkaTestUtils.consumerProps(
                 "test-user-events-consumer", "true", embeddedKafkaBroker);
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
         try (org.apache.kafka.clients.consumer.Consumer<String, String> consumer =
                      new org.springframework.kafka.core.DefaultKafkaConsumerFactory<String, String>(props).createConsumer()) {
             embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, "user-events");
