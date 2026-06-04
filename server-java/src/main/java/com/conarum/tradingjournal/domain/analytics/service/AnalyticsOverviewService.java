@@ -6,6 +6,7 @@ import com.conarum.tradingjournal.domain.trade.model.Trade;
 import com.conarum.tradingjournal.domain.trade.repository.TradeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,14 @@ import java.util.stream.Collectors;
 public class AnalyticsOverviewService {
 
     private final TradeRepository tradeRepository;
+
+    /**
+     * Trading days per year for Sharpe Ratio annualisation.
+     * Use 252 for stocks/forex (US trading days), 365 for crypto (24/7 markets).
+     * Default: 365 — most users of this app trade crypto.
+     */
+    @Value("${app.analytics.trading-days-per-year:365}")
+    private int tradingDaysPerYear;
 
     @Cacheable(value = "analytics", key = "#userEmail + '_' + (#filter.dateFrom != null && !#filter.dateFrom.isEmpty() ? #filter.dateFrom : 'all') + '_' + (#filter.dateTo != null && !#filter.dateTo.isEmpty() ? #filter.dateTo : 'all')")
     public Overview getOverview(String userEmail, DateRangeFilterDto filter) {
@@ -71,12 +80,17 @@ public class AnalyticsOverviewService {
             variance = sumSquares / (dailyReturns.size() - 1);
         }
         double stdDev = Math.sqrt(variance);
-        BigDecimal sharpeRatio = stdDev > 0 ? BigDecimal.valueOf((avgReturn.doubleValue() / stdDev) * Math.sqrt(252)) : (avgReturn.compareTo(BigDecimal.ZERO) > 0 ? BigDecimal.valueOf(-1) : BigDecimal.ZERO);
+        // Annualise using configurable trading days (crypto=365, stocks=252)
+        BigDecimal sharpeRatio = stdDev > 0
+                ? BigDecimal.valueOf((avgReturn.doubleValue() / stdDev) * Math.sqrt(tradingDaysPerYear))
+                : (avgReturn.compareTo(BigDecimal.ZERO) > 0 ? BigDecimal.valueOf(-1) : BigDecimal.ZERO);
 
+        // Max Drawdown: use adjustedPnl (pnl - fees) — consistent with totalPnl logic above
         BigDecimal peak = BigDecimal.ZERO, cumPnl = BigDecimal.ZERO, maxDrawdown = BigDecimal.ZERO, currentDrawdown = BigDecimal.ZERO;
         for (Trade t : trades) {
-            BigDecimal pnl = t.getPnl() != null ? t.getPnl() : BigDecimal.ZERO;
-            cumPnl = cumPnl.add(pnl);
+            BigDecimal fees = t.getFees() != null ? t.getFees() : BigDecimal.ZERO;
+            BigDecimal adjustedPnl = (t.getPnl() != null ? t.getPnl() : BigDecimal.ZERO).subtract(fees);
+            cumPnl = cumPnl.add(adjustedPnl);
             if (cumPnl.compareTo(peak) > 0) peak = cumPnl;
             BigDecimal dd = peak.subtract(cumPnl);
             if (dd.compareTo(maxDrawdown) > 0) maxDrawdown = dd;

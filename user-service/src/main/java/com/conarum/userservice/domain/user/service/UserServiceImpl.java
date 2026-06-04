@@ -26,6 +26,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.PostConstruct;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,6 +54,20 @@ public class UserServiceImpl implements UserService {
 
     @Value("${app.security.super-admins:}")
     private String superAdmins;
+
+    // Parsed once at startup — avoids repeated split/trim in hot paths (DRY)
+    private Set<String> superAdminSet = Set.of();
+
+    @PostConstruct
+    void initSuperAdmins() {
+        if (superAdmins != null && !superAdmins.isBlank()) {
+            superAdminSet = Arrays.stream(superAdmins.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        }
+        log.info("Super admins loaded: {}", superAdminSet);
+    }
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -137,15 +153,9 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        // Check super admin (hardcoded logic)
-        if (superAdmins != null && !superAdmins.isEmpty()) {
-            List<String> adminList = Arrays.stream(superAdmins.split(","))
-                    .map(String::trim)
-                    .toList();
-            if (adminList.contains(request.email().trim())) {
-                roleIds.add("ROLE_SUPER_ADMIN");
-                roleIds.add("ROLE_ADMIN");
-            }
+        if (superAdminSet.contains(request.email().trim())) {
+            roleIds.add("ROLE_SUPER_ADMIN");
+            roleIds.add("ROLE_ADMIN");
         }
 
         // Cache user groups
@@ -214,15 +224,9 @@ public class UserServiceImpl implements UserService {
         List<String> allPermissions = new ArrayList<>(permissionNames);
         allPermissions.addAll(menuIds);
         
-        // Check super admin bypass
-        if (superAdmins != null && !superAdmins.isEmpty()) {
-            List<String> adminList = Arrays.stream(superAdmins.split(","))
-                    .map(String::trim)
-                    .toList();
-            if (adminList.contains(email.trim())) {
-                allPermissions.add("ROLE_SUPER_ADMIN");
-                allPermissions.add("ROLE_ADMIN");
-            }
+        if (superAdminSet.contains(email.trim())) {
+            allPermissions.add("ROLE_SUPER_ADMIN");
+            allPermissions.add("ROLE_ADMIN");
         }
         
         profile.setPermissions(allPermissions);

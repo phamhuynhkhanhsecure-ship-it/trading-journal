@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 
 @Component
 @Slf4j
@@ -29,6 +30,19 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
 
     @org.springframework.beans.factory.annotation.Value("${app.security.super-admins:}")
     private String superAdminsStr;
+
+    // Parsed once at startup — avoids repeated split/trim on every request (DRY)
+    private java.util.Set<String> superAdminSet = java.util.Set.of();
+
+    @PostConstruct
+    void initSuperAdmins() {
+        if (superAdminsStr != null && !superAdminsStr.isBlank()) {
+            superAdminSet = java.util.Arrays.stream(superAdminsStr.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        }
+    }
 
     // Whitelisted paths that don't need DB authorization check (already authenticated)
     private static final String[] WHITELIST_PATHS = {
@@ -79,14 +93,9 @@ public class DynamicAuthorizationFilter implements GlobalFilter, Ordered {
     }
 
     private Mono<Boolean> checkAccess(String email, String path, String method) {
-        // Super Admin bypass
-        if (superAdminsStr != null) {
-            java.util.List<String> adminList = java.util.Arrays.stream(superAdminsStr.split(","))
-                    .map(String::trim)
-                    .toList();
-            if (adminList.contains(email.trim())) {
-                return Mono.just(true);
-            }
+        // Super Admin bypass — uses pre-parsed Set, O(1) lookup
+        if (superAdminSet.contains(email.trim())) {
+            return Mono.just(true);
         }
 
         // Fix 3: single Redis call — user-service pre-builds flattened permission list on login/role change

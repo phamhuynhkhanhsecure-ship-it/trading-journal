@@ -22,8 +22,7 @@ public class SagaUserRoleConsumerService {
             log.info("Received UserRoleUpgradedEvent for user: {}", event.getUserEmail());
 
             if ("PREMIUM".equals(event.getNewRole())) {
-                // Mocking unlocking Premium features
-                log.info(">>> SAGA COMPLETE: Unlocking Premium Analytics features for user {} <<<", event.getUserEmail());
+                log.info("SAGA COMPLETE: Unlocking Premium Analytics features for user '{}'", event.getUserEmail());
                 
                 com.conarum.tradingjournal.domain.analytics.model.AnalyticsConfig config = analyticsConfigRepository.findByUserEmail(event.getUserEmail())
                         .orElse(com.conarum.tradingjournal.domain.analytics.model.AnalyticsConfig.builder().userEmail(event.getUserEmail()).build());

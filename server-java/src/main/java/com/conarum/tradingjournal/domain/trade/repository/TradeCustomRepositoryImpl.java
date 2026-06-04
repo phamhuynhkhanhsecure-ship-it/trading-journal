@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,7 +56,8 @@ public class TradeCustomRepositoryImpl implements TradeCustomRepository {
         if (filter.getYear() != null && filter.getMonth() != null) {
             String monthStr = filter.getMonth() < 10 ? "0" + filter.getMonth() : String.valueOf(filter.getMonth());
             String yearMonth = filter.getYear() + "-" + monthStr;
-            query.addCriteria(Criteria.where("date").regex("^" + yearMonth));
+            // Pattern.quote() escapes any regex special chars — prevents ReDoS
+            query.addCriteria(Criteria.where("date").regex("^" + Pattern.quote(yearMonth)));
         } else {
             if (filter.getDateFrom() != null || filter.getDateTo() != null) {
                 Criteria dateCriteria = Criteria.where("date");
