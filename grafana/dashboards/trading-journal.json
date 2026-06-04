@@ -1,0 +1,71 @@
+{
+  "title": "Trading Journal — Overview",
+  "uid": "trading-journal-overview",
+  "schemaVersion": 38,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Trades Created (total)",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "sum(trading_trade_created_total)", "legendFormat": "Trades" }],
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 2, "type": "stat", "title": "AI Requests (total)",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "sum(trading_ai_request_total)", "legendFormat": "AI Calls" }],
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "🚨 DEAD_LETTER Events",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "sum(trading_outbox_dead_letter_total) + sum(userservice_outbox_dead_letter_total)", "legendFormat": "Dead Letters" }],
+      "options": { "colorMode": "background", "graphMode": "none",
+        "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 1, "color": "red" }] }
+      }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Outbox Queue Depth",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "trading_outbox_queue_size + userservice_outbox_queue_size", "legendFormat": "Pending" }],
+      "options": { "colorMode": "background",
+        "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 50, "color": "yellow" }, { "value": 200, "color": "red" }] }
+      }
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "Trade Creation Rate",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [{ "expr": "rate(trading_trade_created_total[5m])", "legendFormat": "trades/sec" }]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "AI Request Latency (p50/p95/p99)",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(trading_ai_latency_seconds_bucket[5m]))", "legendFormat": "p50 {{type}}" },
+        { "expr": "histogram_quantile(0.95, rate(trading_ai_latency_seconds_bucket[5m]))", "legendFormat": "p95 {{type}}" },
+        { "expr": "histogram_quantile(0.99, rate(trading_ai_latency_seconds_bucket[5m]))", "legendFormat": "p99 {{type}}" }
+      ]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "HTTP Request Latency p95 (by endpoint)",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, sum by (uri, le) (rate(http_server_requests_seconds_bucket{application='trading-journal-server'}[5m])))",
+        "legendFormat": "{{uri}}"
+      }]
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "JVM Heap Usage",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "jvm_memory_used_bytes{area='heap'}", "legendFormat": "Heap Used — {{instance}}" },
+        { "expr": "jvm_memory_max_bytes{area='heap'}", "legendFormat": "Heap Max — {{instance}}" }
+      ]
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "Premium Purchases",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "targets": [{ "expr": "rate(userservice_billing_purchase_total[5m])", "legendFormat": "purchases/sec" }]
+    }
+  ]
+}

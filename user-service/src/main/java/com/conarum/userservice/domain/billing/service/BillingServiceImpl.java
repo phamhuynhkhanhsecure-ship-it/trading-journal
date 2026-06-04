@@ -1,6 +1,7 @@
 package com.conarum.userservice.domain.billing.service;
 
 import com.conarum.userservice.domain.billing.dto.BillingTransactionResponseDto;
+import com.conarum.userservice.infrastructure.metrics.UserServiceMetrics;
 import com.conarum.userservice.domain.billing.dto.PaymentProcessedEvent;
 import com.conarum.userservice.domain.billing.mapper.BillingMapper;
 import com.conarum.userservice.domain.billing.model.BillingTransaction;
@@ -24,6 +25,7 @@ public class BillingServiceImpl implements BillingService {
     private final OutboxEventRepository outboxEventRepository;
     private final BillingMapper billingMapper;
     private final ObjectMapper objectMapper;
+    private final UserServiceMetrics userServiceMetrics;
 
     @Override
     @Transactional
@@ -65,6 +67,7 @@ public class BillingServiceImpl implements BillingService {
             throw new RuntimeException("Failed to serialize PaymentProcessedEvent for outbox", e);
         }
 
+        userServiceMetrics.recordBillingPurchase();
         return billingMapper.toDto(savedTransaction);
     }
 }

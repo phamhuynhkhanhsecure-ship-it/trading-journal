@@ -2,6 +2,7 @@ package com.conarum.tradingjournal.domain.trade.service;
 
 import com.conarum.tradingjournal.common.event.TradeCreatedEvent;
 import com.conarum.tradingjournal.common.exception.ResourceNotFoundException;
+import com.conarum.tradingjournal.common.metrics.TradingMetrics;
 import com.conarum.tradingjournal.config.KafkaConfig;
 import com.conarum.tradingjournal.domain.rule.model.Rule;
 import com.conarum.tradingjournal.domain.rule.repository.RuleRepository;
@@ -42,6 +43,7 @@ public class TradeServiceImpl implements TradeService {
     private final GoogleDriveService googleDriveService;
     private final TradeOutboxEventRepository tradeOutboxEventRepository;
     private final ObjectMapper objectMapper;
+    private final TradingMetrics tradingMetrics;
 
     @Override
     public List<TradeResponseDto> getAllTrades(TradeFilterDto filter, String userEmail) {
@@ -88,6 +90,7 @@ public class TradeServiceImpl implements TradeService {
             throw new RuntimeException("Failed to serialize TradeCreatedEvent for outbox", e);
         }
 
+        tradingMetrics.recordTradeCreated();
         return tradeMapper.toDto(savedTrade);
     }
 
@@ -260,6 +263,7 @@ public class TradeServiceImpl implements TradeService {
         }
 
         tradeRepository.delete(trade);
+        tradingMetrics.recordTradeDeleted();
         log.info("Deleted trade '{}' and {} Drive image(s) for user '{}'",
                 id, trade.getImages() != null ? trade.getImages().size() : 0, userEmail);
     }

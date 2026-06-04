@@ -1,6 +1,7 @@
 package com.conarum.userservice.infrastructure.outbox;
 
 import com.conarum.userservice.common.model.OutboxEvent;
+import com.conarum.userservice.infrastructure.metrics.UserServiceMetrics;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class OutboxScheduler {
     private final OutboxEventRepository outboxEventRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final UserServiceMetrics userServiceMetrics;
 
     // ── Main poll ──────────────────────────────────────────────────────────────
 
@@ -50,6 +52,8 @@ public class OutboxScheduler {
         }
 
         log.info("Found {} pending outbox events. Processing...", pendingEvents.size());
+
+        userServiceMetrics.setOutboxQueueSize(pendingEvents.size());
 
         // Batch-mark IN_PROGRESS before sending — prevents next poll from re-processing
         pendingEvents.forEach(e -> e.setStatus("IN_PROGRESS"));
@@ -85,6 +89,7 @@ public class OutboxScheduler {
 
             if (retries >= MAX_RETRIES) {
                 event.setStatus("DEAD_LETTER");
+                userServiceMetrics.recordOutboxDeadLetter();
                 log.error("Outbox event '{}' -> DEAD_LETTER after {} retries. Cause: {}",
                         event.getId(), retries, ex.getMessage());
             } else {

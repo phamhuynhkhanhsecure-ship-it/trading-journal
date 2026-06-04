@@ -1,5 +1,6 @@
 package com.conarum.tradingjournal.domain.trade.service;
 
+import com.conarum.tradingjournal.common.metrics.TradingMetrics;
 import com.conarum.tradingjournal.domain.trade.model.TradeOutboxEvent;
 import com.conarum.tradingjournal.domain.trade.repository.TradeOutboxEventRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class TradeOutboxScheduler {
 
     private final TradeOutboxEventRepository tradeOutboxEventRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final TradingMetrics tradingMetrics;
 
     // ── Main poll ──────────────────────────────────────────────────────────────
 
@@ -48,6 +50,9 @@ public class TradeOutboxScheduler {
         }
 
         log.info("Found {} pending trade outbox events. Processing...", pendingEvents.size());
+
+        // Update queue size gauge before processing
+        tradingMetrics.setOutboxQueueSize(pendingEvents.size());
 
         // Batch-mark IN_PROGRESS before sending — prevents next poll from re-processing
         pendingEvents.forEach(e -> e.setStatus("IN_PROGRESS"));
@@ -74,6 +79,7 @@ public class TradeOutboxScheduler {
 
             if (retries >= MAX_RETRIES) {
                 event.setStatus("DEAD_LETTER");
+                tradingMetrics.recordOutboxDeadLetter();
                 log.error("Trade outbox event '{}' -> DEAD_LETTER after {} retries. Cause: {}",
                         event.getId(), retries, ex.getMessage());
             } else {
