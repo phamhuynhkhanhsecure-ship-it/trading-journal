@@ -1,5 +1,6 @@
 package com.conarum.tradingjournal.domain.trade.service;
 
+import com.conarum.tradingjournal.config.TestSecurityConfig;
 import com.conarum.tradingjournal.domain.trade.model.TradeOutboxEvent;
 import com.conarum.tradingjournal.domain.trade.repository.TradeOutboxEventRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -34,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 @EmbeddedKafka(
     partitions = 1,
     topics = { "trading-events" },
@@ -78,6 +81,11 @@ class TradeOutboxSchedulerIntegrationTest {
         // Assert: consumed from Kafka
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(
                 "test-scheduler-consumer", "true", embeddedKafkaBroker);
+        // Explicitly set String deserializers — KafkaTestUtils defaults may use IntegerDeserializer
+        consumerProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
+        consumerProps.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                org.apache.kafka.common.serialization.StringDeserializer.class);
         try (org.apache.kafka.clients.consumer.Consumer<String, String> consumer =
                      new org.springframework.kafka.core.DefaultKafkaConsumerFactory<String, String>(consumerProps).createConsumer()) {
             embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, "trading-events");

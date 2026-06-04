@@ -56,7 +56,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
             List<String> roles = (apiResponse != null && apiResponse.isSuccess()) ? apiResponse.getData() : List.of();
             return roles != null ? roles : List.of();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to sync user '{}' with user-service: {}", email, e.getMessage());
             return List.of();
         }
     }

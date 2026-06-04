@@ -5,7 +5,7 @@ spring:
     name: user-service
   data:
     mongodb:
-      uri: ${MONGO_URI}
+      uri: ${MONGO_URI:mongodb://localhost:27017/user_service}
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}

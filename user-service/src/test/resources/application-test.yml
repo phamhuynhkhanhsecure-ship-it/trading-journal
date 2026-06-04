@@ -6,7 +6,7 @@ spring:
       enabled: false
   data:
     mongodb:
-      uri: ""
+      uri: mongodb://localhost:27017/test_user_service
       auto-index-creation: true
     redis:
       host: localhost
@@ -30,6 +30,12 @@ eureka:
     enabled: false
     register-with-eureka: false
     fetch-registry: false
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.0
 
 app:
   mongo:

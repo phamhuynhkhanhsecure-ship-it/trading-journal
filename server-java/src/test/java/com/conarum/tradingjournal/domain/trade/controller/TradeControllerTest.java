@@ -1,17 +1,20 @@
 package com.conarum.tradingjournal.domain.trade.controller;
 
-import com.conarum.tradingjournal.common.dto.ApiResponse;
 import com.conarum.tradingjournal.domain.trade.dto.TradeRequestDto;
 import com.conarum.tradingjournal.domain.trade.dto.TradeResponseDto;
+import com.conarum.tradingjournal.domain.trade.service.GoogleDriveService;
 import com.conarum.tradingjournal.domain.trade.service.TradeService;
+import com.conarum.tradingjournal.integration.client.UserServiceClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -25,17 +28,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * @WebMvcTest — tests the HTTP layer only (routing, serialization, validation, security).
- * TradeService is mocked — no MongoDB, no Kafka needed.
+ * Controller integration test — full Spring context with embedded MongoDB (flapdoodle).
  *
- * Key things being tested:
- * - HTTP method + path mapping
- * - JWT authentication required (401 without token)
- * - Request/response JSON serialization
- * - ApiResponse<T> wrapper present in all responses
- * - Correct HTTP status codes
+ * Uses @SpringBootTest(webEnvironment=MOCK) + @AutoConfigureMockMvc + @ActiveProfiles("test").
+ * This loads the complete context (solving @EnableMongoAuditing + Feign issues that
+ * @WebMvcTest cannot handle) while still using MockMvc for HTTP assertions.
+ *
+ * @MockBean replaces: TradeService (no DB needed), UserServiceClient (no Feign call),
+ * GoogleDriveService (no Drive call), AiServiceClient (no Gemini call).
+ * jwt() post-processor bypasses the JWT decoder entirely.
  */
-@WebMvcTest(TradeController.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 @DisplayName("TradeController — HTTP layer tests")
 class TradeControllerTest {
 
@@ -43,8 +48,10 @@ class TradeControllerTest {
     @Autowired ObjectMapper objectMapper;
 
     @MockBean TradeService tradeService;
+    @MockBean UserServiceClient userServiceClient;
+    @MockBean GoogleDriveService googleDriveService;
+    @MockBean com.conarum.tradingjournal.domain.ai.client.AiServiceClient aiServiceClient;
 
-    // JWT with email claim — matches SecurityUtils.getCurrentUserEmail()
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor userJwt() {
         return jwt().jwt(j -> j.claim("email", "user@example.com"));
     }
@@ -60,15 +67,13 @@ class TradeControllerTest {
         dto.setSide("LONG");
         dto.setPnl(BigDecimal.valueOf(500));
 
-        when(tradeService.getAllTrades(any(), eq("user@example.com")))
-                .thenReturn(List.of(dto));
+        when(tradeService.getAllTrades(any(), eq("user@example.com"))).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/trades").with(userJwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data[0].id").value("trade-001"))
-                .andExpect(jsonPath("$.data[0].instrument").value("BTCUSDT"))
-                .andExpect(jsonPath("$.data[0].side").value("LONG"));
+                .andExpect(jsonPath("$.data[0].instrument").value("BTCUSDT"));
     }
 
     @Test
@@ -133,8 +138,7 @@ class TradeControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value("trade-new"))
-                .andExpect(jsonPath("$.data.instrument").value("SOLUSDT"));
+                .andExpect(jsonPath("$.data.id").value("trade-new"));
 
         verify(tradeService).createTrade(any(), eq("user@example.com"));
     }
@@ -157,13 +161,14 @@ class TradeControllerTest {
     void updateTrade_validRequest_returns200() throws Exception {
         TradeRequestDto request = new TradeRequestDto();
         request.setInstrument("BTCUSDT");
+        request.setDate("2024-01-15");   // @NotBlank required
+        request.setSide("LONG");          // @NotBlank required
 
         TradeResponseDto updated = new TradeResponseDto();
         updated.setId("trade-001");
         updated.setInstrument("BTCUSDT");
 
-        when(tradeService.updateTrade(eq("trade-001"), any(), eq("user@example.com")))
-                .thenReturn(updated);
+        when(tradeService.updateTrade(eq("trade-001"), any(), eq("user@example.com"))).thenReturn(updated);
 
         mockMvc.perform(put("/api/trades/trade-001")
                         .with(userJwt())

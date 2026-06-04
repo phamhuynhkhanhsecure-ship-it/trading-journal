@@ -8,12 +8,14 @@ import com.conarum.tradingjournal.domain.trade.model.Trade.TradeImage;
 import com.conarum.tradingjournal.domain.trade.model.TradeOutboxEvent;
 import com.conarum.tradingjournal.domain.trade.repository.TradeOutboxEventRepository;
 import com.conarum.tradingjournal.domain.trade.repository.TradeRepository;
+import com.conarum.tradingjournal.config.TestSecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.*;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 @DisplayName("TradeService Integration Tests")
 class TradeServiceIntegrationTest {
 

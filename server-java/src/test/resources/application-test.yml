@@ -6,8 +6,9 @@ spring:
       enabled: false
   data:
     mongodb:
-      # Empty URI → flapdoodle auto-configures embedded MongoDB
-      uri: ""
+      # Valid URI format required — flapdoodle overrides the actual connection
+      # to its embedded instance. Empty string causes URI parse failure.
+      uri: mongodb://localhost:27017/test_trading_journal
       auto-index-creation: true
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers:localhost:9092}
@@ -21,13 +22,22 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ""   # Disable JWT auto-config in service-layer tests
+          # jwk-set-uri uses lazy key fetching — never called in tests that use jwt() mock
+          # or unauthenticated tests. Avoids startup connection to Google.
+          jwk-set-uri: http://test-only-never-called-jwks/keys
 
 eureka:
   client:
     enabled: false
     register-with-eureka: false
     fetch-registry: false
+
+# Flapdoodle: MongoDB version to download for embedded instance
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.0
 
 # Disable MongoTransactionManager — embedded MongoDB is standalone (no replica set)
 app:

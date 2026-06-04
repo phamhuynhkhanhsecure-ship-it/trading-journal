@@ -9,8 +9,10 @@ import com.conarum.tradingjournal.domain.trade.model.Trade;
 import com.conarum.tradingjournal.domain.trade.model.TradeOutboxEvent;
 import com.conarum.tradingjournal.domain.trade.repository.TradeOutboxEventRepository;
 import com.conarum.tradingjournal.domain.trade.repository.TradeRepository;
+import com.conarum.tradingjournal.common.metrics.TradingMetrics;
 import com.conarum.tradingjournal.domain.rule.repository.RuleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,10 +41,13 @@ class TradeServiceImplTest {
     @Mock private TradeMapper tradeMapper;
     @Mock private GoogleDriveService googleDriveService;
     @Mock private TradeOutboxEventRepository tradeOutboxEventRepository;
+    @Mock private TradingMetrics tradingMetrics;  // Added: prevents NPE after metrics were wired in
 
     @InjectMocks private TradeServiceImpl tradeService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // JavaTimeModule required: TradeCreatedEvent contains LocalDateTime
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
 
     @BeforeEach
     void setUp() throws Exception {
@@ -76,7 +81,7 @@ class TradeServiceImplTest {
         // Arrange
         Trade trade = buildTrade("trade-001", "user@example.com");
         TradeResponseDto dto = new TradeResponseDto();
-        when(tradeRepository.findTradesByTradeFilter("user@example.com", any())).thenReturn(List.of(trade));
+        when(tradeRepository.findTradesByTradeFilter(eq("user@example.com"), any())).thenReturn(List.of(trade));
         when(tradeMapper.toDtoList(List.of(trade))).thenReturn(List.of(dto));
 
         // Act
