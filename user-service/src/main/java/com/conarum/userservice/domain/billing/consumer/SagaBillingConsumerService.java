@@ -4,7 +4,6 @@ import com.conarum.userservice.domain.billing.dto.PaymentProcessedEvent;
 import com.conarum.userservice.domain.billing.dto.UserRoleUpgradedEvent;
 import com.conarum.userservice.domain.group.model.Group;
 import com.conarum.userservice.domain.group.repository.GroupRepository;
-import com.conarum.userservice.domain.role.model.Role;
 import com.conarum.userservice.domain.role.repository.RoleRepository;
 import com.conarum.userservice.domain.user.model.User;
 import com.conarum.userservice.domain.user.repository.UserRepository;
