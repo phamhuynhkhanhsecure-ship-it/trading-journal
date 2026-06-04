@@ -25,7 +25,7 @@ public class AiServiceImpl implements AiService {
     private final TradeRepository tradeRepository;
     private final AiServiceClient aiServiceClient;
     private final TradingMetrics tradingMetrics;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper; // injected by Spring — includes JavaTimeModule etc.
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
